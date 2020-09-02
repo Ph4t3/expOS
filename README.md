@@ -4,7 +4,7 @@
 
 ##### Preparatory Stages
 - [x] Stage 1 : Setting up the System :heavy_check_mark:
-- [ ] Stage 2 : Understanding the Filesystem
+- [x] Stage 2 : Understanding the Filesystem :heavy_check_mark:
 - [ ] Stage 3 : Bootstrap Loader
 - [ ] Stage 4 : Learning the SPL Language
 - [ ] Stage 5 : XSM Debugging
