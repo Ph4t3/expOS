@@ -7,7 +7,7 @@
 - [x] Stage 2 : Understanding the Filesystem :heavy_check_mark:
 - [x] Stage 3 : Bootstrap Loade :heavy_check_mark:
 - [x] Stage 4 : Learning the SPL Language :heavy_check_mark:
-- [ ] Stage 5 : XSM Debugging
+- [x] Stage 5 : XSM Debugging :heavy_check_mark:
 - [ ] Stage 6 : Running a User Program
 - [ ] Stage 7 : ABE & XEXE Format
 - [ ] Stage 8 : Handline Timer Interrupt
