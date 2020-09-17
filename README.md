@@ -8,7 +8,7 @@
 - [x] Stage 3 : Bootstrap Loade :heavy_check_mark:
 - [x] Stage 4 : Learning the SPL Language :heavy_check_mark:
 - [x] Stage 5 : XSM Debugging :heavy_check_mark:
-- [ ] Stage 6 : Running a User Program
+- [x] Stage 6 : Running a User Program :heavy_check_mark:
 - [ ] Stage 7 : ABE & XEXE Format
 - [ ] Stage 8 : Handline Timer Interrupt
 - [ ] Stage 9 : Handling Kernel Stack
