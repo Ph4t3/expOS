@@ -9,7 +9,7 @@
 - [x] Stage 4 : Learning the SPL Language :heavy_check_mark:
 - [x] Stage 5 : XSM Debugging :heavy_check_mark:
 - [x] Stage 6 : Running a User Program :heavy_check_mark:
-- [ ] Stage 7 : ABE & XEXE Format
+- [x] Stage 7 : ABE & XEXE Format :heavy_check_mark:
 - [ ] Stage 8 : Handline Timer Interrupt
 - [ ] Stage 9 : Handling Kernel Stack
 - [ ] Stage 10 : Console Output
