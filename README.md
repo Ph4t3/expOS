@@ -10,7 +10,7 @@
 - [x] Stage 5 : XSM Debugging :heavy_check_mark:
 - [x] Stage 6 : Running a User Program :heavy_check_mark:
 - [x] Stage 7 : ABE & XEXE Format :heavy_check_mark:
-- [ ] Stage 8 : Handline Timer Interrupt
+- [x] Stage 8 : Handline Timer Interrupt :heavy_check_mark:
 - [ ] Stage 9 : Handling Kernel Stack
 - [ ] Stage 10 : Console Output
 - [ ] Stage 11 : Introduction to ExpL
