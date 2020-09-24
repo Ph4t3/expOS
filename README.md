@@ -13,7 +13,7 @@
 - [x] Stage 8 : Handline Timer Interrupt :heavy_check_mark:
 - [x] Stage 9 : Handling Kernel Stack :heavy_check_mark:
 - [x] Stage 10 : Console Output :heavy_check_mark:
-- [ ] Stage 11 : Introduction to ExpL
+- [x] Stage 11 : Introduction to ExpL :heavy_check_mark:
 - [ ] Stage 12 : Introduction to Multiprogramming
 
 ##### Intermediate Stages
