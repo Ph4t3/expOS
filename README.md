@@ -12,7 +12,7 @@
 - [x] Stage 7 : ABE & XEXE Format :heavy_check_mark:
 - [x] Stage 8 : Handline Timer Interrupt :heavy_check_mark:
 - [x] Stage 9 : Handling Kernel Stack :heavy_check_mark:
-- [ ] Stage 10 : Console Output
+- [x] Stage 10 : Console Output :heavy_check_mark:
 - [ ] Stage 11 : Introduction to ExpL
 - [ ] Stage 12 : Introduction to Multiprogramming
 
