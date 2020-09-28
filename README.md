@@ -17,7 +17,7 @@
 - [x] Stage 12 : Introduction to Multiprogramming :heavy_check_mark:
 
 ##### Intermediate Stages
-- [ ] Stage 13 : Boot Module
+- [x] Stage 13 : Boot Module :heavy_check_mark:
 - [ ] Stage 14 : Round Robin Scheduler
 - [ ] Stage 15 : Resource Manager Module
 - [ ] Stage 16 : Console Input
