@@ -19,7 +19,7 @@
 ##### Intermediate Stages
 - [x] Stage 13 : Boot Module :heavy_check_mark:
 - [x] Stage 14 : Round Robin Scheduler :heavy_check_mark:
-- [ ] Stage 15 : Resource Manager Module
+- [x] Stage 15 : Resource Manager Module :heavy_check_mark:
 - [ ] Stage 16 : Console Input
 - [ ] Stage 17 : Program Loader
 - [ ] Stage 18 : Disk Interrupt Handler
