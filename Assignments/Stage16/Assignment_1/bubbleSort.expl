@@ -1,0 +1,47 @@
+decl
+	int arr[100], n;
+enddecl
+int main()
+{
+decl
+   	int temp, i, j;
+enddecl
+begin
+	//read array length
+	temp = exposcall("Write", -2, "Enter n");
+	temp = exposcall ("Read" , -1, n);
+	
+	//read array
+	temp = exposcall("Write", -2, "Enter array");
+	i = 0;
+	while (i != n) do
+		temp = exposcall ("Read" , -1, arr[i]);
+		i = i + 1;
+	endwhile;
+	
+	//bubbleSort
+	i = 0;
+	while(i < (n-1)) do
+		j = 0;
+		while(j < (n-1-i)) do
+			if(arr[j] > arr[j+1]) then
+				temp = arr[j];
+				arr[j] = arr[j+1];
+				arr[j+1] = temp;
+			endif;
+			j = j+1;
+		endwhile;
+		i = i+1;
+	endwhile;
+
+	//print array
+	temp = exposcall("Write", -2, "Sorted array");
+	i = 0;
+	while (i != n) do
+		temp = exposcall ("Write" , -2, arr[i]);
+		i = i + 1;
+	endwhile;
+
+	return 0;
+end
+}
