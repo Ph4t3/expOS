@@ -21,7 +21,7 @@
 - [x] Stage 14 : Round Robin Scheduler :heavy_check_mark:
 - [x] Stage 15 : Resource Manager Module :heavy_check_mark:
 - [x] Stage 16 : Console Input :heavy_check_mark:
-- [ ] Stage 17 : Program Loader
+- [x] Stage 17 : Program Loader :heavy_check_mark:
 - [ ] Stage 18 : Disk Interrupt Handler
 - [ ] Stage 19 : Exception Handler
 
