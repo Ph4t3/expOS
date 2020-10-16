@@ -22,7 +22,7 @@
 - [x] Stage 15 : Resource Manager Module :heavy_check_mark:
 - [x] Stage 16 : Console Input :heavy_check_mark:
 - [x] Stage 17 : Program Loader :heavy_check_mark:
-- [ ] Stage 18 : Disk Interrupt Handler
+- [x] Stage 18 : Disk Interrupt Handler :heavy_check_mark:
 - [ ] Stage 19 : Exception Handler
 
 ##### Final Stages
