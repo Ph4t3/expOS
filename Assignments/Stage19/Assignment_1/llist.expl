@@ -1,0 +1,39 @@
+type
+linkedlist {
+    int val;
+    linkedlist next;
+}
+endtype
+int main()
+{
+decl
+    linkedlist head, tail;
+    int temp,N, counter;
+enddecl
+begin
+    temp = initialize();
+    temp = exposcall("Write" , -2, "Enter N");
+    temp = exposcall("Read" , -1, N);
+    temp = exposcall("Write" , -2, "Enter numbers");
+
+    head = alloc();
+    tail = head;
+
+    counter = 0;
+    while(counter < N) do
+        tail.next = alloc();
+        tail = tail.next;
+
+        temp = exposcall("Read" , -1, tail.val);
+        counter = counter + 1;
+    endwhile;
+
+    temp = exposcall("Write" , -2, "Numbers are");
+    tail = head.next;
+    while(tail != null) do
+        temp = exposcall("Write" , -2, tail.val);
+        tail = tail.next;    
+    endwhile;
+    return 0;
+end
+}
