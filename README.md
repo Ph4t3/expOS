@@ -23,7 +23,7 @@
 - [x] Stage 16 : Console Input :heavy_check_mark:
 - [x] Stage 17 : Program Loader :heavy_check_mark:
 - [x] Stage 18 : Disk Interrupt Handler :heavy_check_mark:
-- [ ] Stage 19 : Exception Handler
+- [x] Stage 19 : Exception Handler :heavy_check_mark:
 
 ##### Final Stages
 - [ ] Stage 20 : Process Creation and Termination
