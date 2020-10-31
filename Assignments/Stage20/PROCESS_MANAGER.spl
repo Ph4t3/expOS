@@ -1,86 +1,103 @@
 alias functionNum R1;
 alias PID R2;
 
+if(functionNum == GET_PCB_ENTRY) then
+    alias counter R5;
+    alias retVal R0;
+    retVal = -1;
+    while(counter < MAX_PROC_NUM) do
+       if([PROCESS_TABLE + counter*16 + 4] == TERMINATED) then
+            [PROCESS_TABLE + counter*16 + 1] = counter;
+            retVal = counter;
+            [PROCESS_TABLE + counter*16 + 4] = ALLOCATED;
+            [PROCESS_TABLE + counter*16 + 14] = PAGE_TABLE_BASE + counter*20;
+            [PROCESS_TABLE + counter*16 + 15] = 10;
+            return;
+       endif;
+    endwhile;
+    return;
+endif;
+
 if(functionNum == FREE_USER_AREA_PAGE) then
-	multipush(R1, R2);
-	alias userAreaPage R2;
-	userAreaPage = [PROCESS_TABLE + PID*16 + 11];
-	R1 = 2;
-	call MEMORY_MANAGER;
-	multipop(R1, R2);
-	return;
+    multipush(R1, R2);
+    alias userAreaPage R2;
+    userAreaPage = [PROCESS_TABLE + PID*16 + 11];
+    R1 = 2;
+    call MEMORY_MANAGER;
+    multipop(R1, R2);
+    return;
 endif;
 
 if(functionNum == EXIT_PROCESS) then
-	//Calling Free User Area Page
-	multipush(R1, R2);
-	R1 = 2;
-	call PROCESS_MANAGER;
-	multipop(R1, R2);
+    //Calling Free User Area Page
+    multipush(R1, R2);
+    R1 = 2;
+    call PROCESS_MANAGER;
+    multipop(R1, R2);
 
-	//Calling Free Page Table
-	multipush(R1, R2);
-	R1 = 4;
-	call PROCESS_MANAGER;
-	multipop(R1, R2);
+    //Calling Free Page Table
+    multipush(R1, R2);
+    R1 = 4;
+    call PROCESS_MANAGER;
+    multipop(R1, R2);
 
-	[PROCESS_TABLE + PID*16 + 4] = TERMINATED;
-	return;
+    [PROCESS_TABLE + PID*16 + 4] = TERMINATED;
+    return;
 endif;
 
 if(functionNum == FREE_PAGE_TABLE) then
-	alias PTBRCopy  R10;
-	alias counter R11;
-	PTBRCopy = PAGE_TABLE_BASE + PID*20;
+    alias PTBRCopy  R10;
+    alias counter R11;
+    PTBRCopy = PAGE_TABLE_BASE + PID*20;
 
-	//Free library
-	[PTBRCopy + 0] = -1;
-	[PTBRCopy + 1] = "0000";
-	[PTBRCopy + 2] = -1;
-	[PTBRCopy + 3] = "0000";
+    //Free library
+    [PTBRCopy + 0] = -1;
+    [PTBRCopy + 1] = "0000";
+    [PTBRCopy + 2] = -1;
+    [PTBRCopy + 3] = "0000";
 
-	counter = 2;
-	while(counter < 10) do
-		if([PTBRCopy + 2*counter] != -1) then
-			//Free the page
-			multipush(R1, R2, R10, R11);
-			R1 = RELEASE_PAGE;
-			R2 = [PTBRCopy + 2*counter];
-			call MEMORY_MANAGER;
-			multipop(R1, R2, R10, R11);
+    counter = 2;
+    while(counter < 10) do
+        if([PTBRCopy + 2*counter] != -1) then
+            //Free the page
+            multipush(R1, R2, R10, R11);
+            R1 = RELEASE_PAGE;
+            R2 = [PTBRCopy + 2*counter];
+            call MEMORY_MANAGER;
+            multipop(R1, R2, R10, R11);
 
-			//Invalidate the entries
-			[PTBRCopy + 2*counter] = -1;
-			[PTBRCopy + 2*counter + 1] = "0000";
-		endif;
-		counter = counter + 1;
-	endwhile;
+            //Invalidate the entries
+            [PTBRCopy + 2*counter] = -1;
+            [PTBRCopy + 2*counter + 1] = "0000";
+        endif;
+        counter = counter + 1;
+    endwhile;
 
-        //Release Block for valid DISK_MAP_TABLE entries
-        counter = 2;
-        while(counter <= 9) do
-            //Release the disk block
-            if([DISK_MAP_TABLE + PID*10 + counter] != -1) then
-                multipush(R1, R2, R11);
-                R1 = RELEASE_BLOCK;
-                R2 = [DISK_MAP_TABLE + PID*10 + counter];
-                call MEMORY_MANAGER;
-                multipop(R1, R2, R11);
-            endif;
-            
-            //Overly complicated while loop :)
-            if(counter == 3) then
-                counter = 8;
-                continue;
-            endif;
-            counter = counter + 1;
-        endwhile;
-    
-        //Invalidate DISK_MAP_TABLE entries;
-        counter = 0;
-        while(counter < 10) do
-            [DISK_MAP_TABLE + PID*10 + counter] = -1;
-            counter = counter + 1;
-        endwhile;
-	return;
+    //Release Block for valid DISK_MAP_TABLE entries
+    counter = 2;
+    while(counter <= 9) do
+        //Release the disk block
+        if([DISK_MAP_TABLE + PID*10 + counter] != -1) then
+            multipush(R1, R2, R11);
+            R1 = RELEASE_BLOCK;
+            R2 = [DISK_MAP_TABLE + PID*10 + counter];
+            call MEMORY_MANAGER;
+            multipop(R1, R2, R11);
+        endif;
+
+        //Overly complicated while loop :)
+        if(counter == 3) then
+            counter = 8;
+            continue;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    //Invalidate DISK_MAP_TABLE entries;
+    counter = 0;
+    while(counter < 10) do
+        [DISK_MAP_TABLE + PID*10 + counter] = -1;
+        counter = counter + 1;
+    endwhile;
+    return;
 endif;
