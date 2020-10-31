@@ -26,7 +26,7 @@
 - [x] Stage 19 : Exception Handler :heavy_check_mark:
 
 ##### Final Stages
-- [ ] Stage 20 : Process Creation and Termination
+- [x] Stage 20 : Process Creation and Termination :heavy_check_mark:
 - [ ] Stage 21 : Process Synchronization
 - [ ] Stage 22 : Semaphores
 - [ ] Stage 23 : File Creation and Deletion
