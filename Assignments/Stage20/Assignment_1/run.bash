@@ -1,5 +1,5 @@
 #!/bin/bash
-. ../../load_env.bash
+. ../../../load_env.bash
 shopt -s expand_aliases
 xi fdisk
 
@@ -80,13 +80,17 @@ xi load --idle IDLE.xsm
 rm IDLE.xsm
 
 #INIT
-expl SHELL.expl
-xi load --init SHELL.xsm
-rm SHELL.xsm
+expl INIT.expl
+xi load --init INIT.xsm
+rm INIT.xsm
 
 #Other Process
-expl odd100.expl
-xi load --exec odd100.xsm
-rm odd100.xsm
+expl odd.expl
+xi load --exec odd.xsm
+rm odd.xsm
+
+expl even.expl
+xi load --exec even.xsm
+rm even.xsm
 
 Xsm --debug
