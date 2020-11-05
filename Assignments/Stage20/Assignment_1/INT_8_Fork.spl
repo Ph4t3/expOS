@@ -94,9 +94,9 @@ endwhile;
 // Initialize Page Table for child
 counter = 0;
 while (counter < 8) do
-    [childPgTbl + counter] = [PTBR + counter];
-    [MEMORY_FREE_LIST + [PTBR + counter]] = [MEMORY_FREE_LIST + [PTBR + counter]] + 1;
-    [childPgTbl + counter + 1] = [PTBR + counter + 1];
+    [childPgTbl + counter*2] = [PTBR + counter*2];
+    [MEMORY_FREE_LIST + [PTBR + counter*2]] = [MEMORY_FREE_LIST + [PTBR + counter*2]] + 1;
+    [childPgTbl + counter*2 + 1] = [PTBR + counter*2 + 1];
     counter = counter + 1;
 endwhile;
 
