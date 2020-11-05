@@ -27,7 +27,7 @@
 
 ##### Final Stages
 - [x] Stage 20 : Process Creation and Termination :heavy_check_mark:
-- [ ] Stage 21 : Process Synchronization
+- [x] Stage 21 : Process Synchronization
 - [ ] Stage 22 : Semaphores
 - [ ] Stage 23 : File Creation and Deletion
 - [ ] Stage 24 : File Read

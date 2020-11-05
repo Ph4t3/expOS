@@ -1,0 +1,87 @@
+alias userSP R9;
+alias PID R10;
+alias pageTableEntry R11;
+alias diskTableEntry R12;
+//set MODE_FLAG
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = -1;
+
+//Change stack and backup
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13] = SP;
+userSP = SP;
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11]*512 - 1;
+backup;
+multipush(EIP);
+
+if((EC != 0) || userSP == (PTLR*512 - 1)) then
+    if(EC == 1) then
+        print "Illegal Instr";
+        print "at";
+        print EIP;
+    endif;
+    if(EC == 2) then
+        print "ILL. MEM ACCS";
+        print "at";
+        print EIP;
+        print "Memory";
+        print EMA;
+    endif;
+    if(EC == 3) then
+        print "Arithmetic";
+        print "Exception";
+        print "at";
+        print EIP;
+    endif;
+    if(userSP == (PTLR*512 - 1)) then
+        print "Stack Full";
+    endif;
+    
+    print "Exiting";
+    R1 = EXIT_PROCESS;
+    R2 = [SYSTEM_STATUS_TABLE + 1];
+    call PROCESS_MANAGER;
+    print "Switching Prg";
+    call SCHEDULER;
+endif;
+
+
+
+PID = [SYSTEM_STATUS_TABLE + 1];
+pageTableEntry = PAGE_TABLE_BASE + PID*20;
+diskTableEntry = DISK_MAP_TABLE + PID*10;
+
+if((EPN >= 4) && (EPN <= 7)) then
+    multipush(R10, R11, R12);
+    R1 = GET_CODE_PAGE;
+    R2 = [diskTableEntry + EPN];
+    call MEMORY_MANAGER;
+    multipop(R10, R11, R12);
+
+    [pageTableEntry + 2*EPN] = R0;
+    [pageTableEntry + 2*EPN + 1] = "1100";
+endif;
+
+if((EPN >= 2) && (EPN <= 3)) then
+    multipush(R10, R11, R12);
+    R1 = GET_FREE_PAGE;
+    call MEMORY_MANAGER;
+    multipop(R10, R11, R12);
+    
+    [pageTableEntry + 4] = R0;
+    [pageTableEntry + 5] = "1110";
+
+    multipush(R10, R11, R12);
+    R1 = GET_FREE_PAGE;
+    call MEMORY_MANAGER;
+    multipop(R10, R11, R12);
+    
+    [pageTableEntry + 6] = R0;
+    [pageTableEntry + 7] = "1110";
+endif;
+
+multipop(EIP);
+restore;
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 0;
+SP = SP + 1;
+[[PTBR + (SP/512)*2]*512 + (SP%512)] = EIP;
+ireturn;
