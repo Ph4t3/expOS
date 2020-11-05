@@ -1,0 +1,92 @@
+alias userSP R5;
+alias sysCallNo R6;
+alias phyAddrRetValue R7;
+alias PID R8;
+alias counter R9;
+alias userAreaPg R10;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+PID = [SYSTEM_STATUS_TABLE + 1];
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = userAreaPg*512 - 1;
+
+sysCallNo = [[PTBR + 2*((userSP - 5)/512)]*512 + (userSP - 5)%512];
+phyAddrRetValue = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(sysCallNo == INT_SEMGET) then
+    alias SEMDesc R11;
+
+    [PROCESS_TABLE + PID*16 + 9] = INT_SEMGET;
+
+    // Find a free per process resource entry
+    counter = 0;
+    SEMDesc = -1;
+    while (counter < 8) do
+        if([userAreaPg*512 + 512-16 + counter*2] == -1) then
+            SEMDesc = counter;
+            [userAreaPg*512 + 512-16 + counter*2] = SEMAPHORE;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    // If no free entry
+    if(SEMDesc == -1) then
+        [phyAddrRetValue] = -1;
+        call Exit;
+    endif;
+
+    // Acquire a semaphore index
+    multipush(R5, R6, R7, R8, R9, R10, R11);
+    R1 = ACQUIRE_SEMAPHORE;
+    R2 = PID;
+    call RESOURCE_MANAGER;
+    multipop(R5, R6, R7, R8, R9, R10, R11);
+
+    //If no free semaphore index
+    if(R0 == -1) then
+        [userAreaPg*512 + 512-16 + SEMDesc*2] = -1;
+        [phyAddrRetValue] = -2;
+        call Exit;
+    endif;
+
+    [userAreaPg*512 + 512-16 + SEMDesc*2 + 1] = R0;
+    [phyAddrRetValue] = SEMDesc;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_SEMRELEASE) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_SEMRELEASE;
+
+    alias SEMDesc R11;
+    SEMDesc = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+
+    // Check if SEMDesc is valid
+    if((SEMDesc < 0) || (SEMDesc > 7) || ([userAreaPg*512 + 512-16 + SEMDesc*2] != SEMAPHORE)) then
+        [phyAddrRetValue] = -1;
+        call Exit;
+    endif;
+
+    // Release the semaphore
+    multipush(R5, R6, R7, R8, R9, R10, R11);
+    R1 = RELEASE_SEMAPHORE;
+    R2 = PID;
+    R3 = [userAreaPg*512 + 512-16 + SEMDesc*2 + 1];
+    call RESOURCE_MANAGER;
+    multipop(R5, R6, R7, R8, R9, R10, R11);
+
+    // Invalidate the per process table entry
+    [userAreaPg*512 + 512-16 + SEMDesc*2] = -1;
+
+    [phyAddrRetValue] = 0;
+    call Exit;
+endif;
+
+Exit:
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    // No.of Kernel Mode Switches
+[29585] = [29585] + 1;
+
+ireturn;

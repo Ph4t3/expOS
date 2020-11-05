@@ -1,0 +1,22 @@
+//Setting Mode flag
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 10;
+//Changing User stack to kernel Stack
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13] = SP;
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11]*512 - 1;
+
+
+// Max Mem Usage
+print "Max.Mem usg >";
+print [29584];
+// No of Disk Access
+print "#Disk Acc >";
+print [29585];
+// No of Context Switches
+print "#Cntxt Swtch>";
+print [29586];
+
+R1 = EXIT_PROCESS;
+R2 = [SYSTEM_STATUS_TABLE + 1];
+call PROCESS_MANAGER;
+
+call SCHEDULER;

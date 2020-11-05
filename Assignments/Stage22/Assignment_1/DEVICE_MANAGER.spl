@@ -1,0 +1,73 @@
+alias functionNum R1;
+alias currentPID R2;
+
+//Disk Store
+if (functionNum == 1) then
+	alias pgNo R3;
+	alias blkNo R4;
+
+endif;
+
+//Disk Load
+if (functionNum == 2) then
+	alias pgNo R3;
+	alias blkNo R4;
+
+	//Acquiring disk
+	multipush(R1, R2, R3, R4);
+	functionNum = 3;
+	call RESOURCE_MANAGER;
+	multipop(R1, R2, R3, R4);
+
+	//Setting disk status table
+	[DISK_STATUS_TABLE + 1] = 0;
+	[DISK_STATUS_TABLE + 2] = pgNo;
+	[DISK_STATUS_TABLE + 3] = blkNo;
+
+	load(pgNo, blkNo);
+	[PROCESS_TABLE + currentPID*16 + 4] = WAIT_DISK;
+	call SCHEDULER;
+endif;
+
+//Terminal Write
+if (functionNum == 3) then
+	//Calling Acquire Terminal
+	alias Word R3;
+
+	multipush(R1, R2, R3);
+	functionNum = 8;
+	call RESOURCE_MANAGER;
+	multipop(R1, R2, R3);
+
+	print Word;
+
+	//Calling Restore Terminal
+	multipush(R1, R2, R3);
+	R1 = 9;
+	call RESOURCE_MANAGER;
+	multipop(R1, R2, R3);
+endif;
+
+//Terminal Read
+if (functionNum == 4) then
+	alias address R3;
+
+	//Calling Acquire Terminal
+	multipush(R1, R2, R3);
+	functionNum = 8;
+	call RESOURCE_MANAGER;
+	multipop(R1, R2, R3);
+	read;
+
+	//Scheduling next Process while waiting
+	[PROCESS_TABLE + 16*currentPID + 4] = WAIT_TERMINAL;
+	multipush(R1, R2, R3);
+	call SCHEDULER;
+	
+	//After return from scheduler
+	multipop(R1, R2, R3);
+	//R3 contains logical address of return variable
+	[[PTBR + 2*(address/512)]*512 + address%512] = [PROCESS_TABLE + currentPID*16 + 8];
+endif;
+return;
+
