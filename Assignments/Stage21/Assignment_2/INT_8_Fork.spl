@@ -1,0 +1,147 @@
+alias userSP R5;
+alias childPID R6;
+alias childPgTbl R7;
+alias counter R8;
+alias temp1 R9;
+alias temp2 R10;
+alias CPSource R11;
+alias CPDest R12;
+
+//Setting Mode Flag
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 8;
+
+//Saving User SP
+userSP = SP;
+//Changing User stack to kernel Stack
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13] = SP;
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11]*512 - 1;
+
+//Getting a PID
+multipush(R5);
+R1 = GET_PCB_ENTRY;
+call PROCESS_MANAGER;
+multipop(R5);
+childPID = R0;
+childPgTbl = PAGE_TABLE_BASE + childPID*20;
+
+//If no PID is available
+if (childPID == -1) then
+    //Return Value
+    [[PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512] = -1;
+    //Mode Flag
+    [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 0;
+    SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
+    ireturn;
+endif;
+
+// Allocate Heap Pages if not present in parent
+if([PTBR + 4] == -1) then
+    multipush(R5, R6, R7);
+    R1 = GET_FREE_PAGE;
+    call MEMORY_MANAGER;
+    multipop(R5, R6, R7);
+
+    [PTBR + 4] = R0;
+    [PTBR + 5] = "1110";
+
+    multipush(R5, R6, R7);
+    R1 = GET_FREE_PAGE;
+    call MEMORY_MANAGER;
+    multipop(R5, R6, R7);
+
+    [PTBR + 6] = R0;
+    [PTBR + 7] = "1110";
+endif;
+
+//UserAreaPage for child
+multipush(R5, R6, R7);
+R1 = GET_FREE_PAGE;
+call MEMORY_MANAGER;
+multipop(R5, R6, R7);
+[PROCESS_TABLE + childPID*16 + 11] = R0;
+
+//Intialization of Process Table
+[PROCESS_TABLE + childPID*16 + 3] = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 3];
+[PROCESS_TABLE + childPID*16 + 6] = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 6];
+[PROCESS_TABLE + childPID*16 + 7] = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 7];
+[PROCESS_TABLE + childPID*16 + 10] = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 10];
+[PROCESS_TABLE + childPID*16 + 13] = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
+//TICK, MODE_FLAG, KPTR Intialized to 0
+[PROCESS_TABLE + childPID*16 + 0] = 0;
+[PROCESS_TABLE + childPID*16 + 9] = 0;
+[PROCESS_TABLE + childPID*16 + 12] = 0;
+//PPID and STATE
+[PROCESS_TABLE + childPID*16 + 2] = [SYSTEM_STATUS_TABLE + 1];
+[PROCESS_TABLE + childPID*16 + 4] = CREATED;
+
+// Initialize per process resource table for child
+counter = 0;
+temp1 = [PROCESS_TABLE + childPID*16 + 11];
+temp2 = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11];
+while (counter < 8) do
+    [temp1*512 + 512-16 + counter*2] = [temp2*512 + 512-16 + counter*2];
+    [temp1*512 + 512-16 + counter*2 + 1] = [temp2*512 + 512-16 + counter*2 + 1] ;
+    counter = counter + 1;
+endwhile;
+
+// Initialize per process disk map table for child
+counter = 0;
+while (counter < 10) do
+    [DISK_MAP_TABLE + childPID*10 + counter] = [DISK_MAP_TABLE + [SYSTEM_STATUS_TABLE + 1]*10 + counter];
+    counter = counter + 1;
+endwhile;
+
+// Initialize Page Table for child
+counter = 0;
+while (counter < 8) do
+    [childPgTbl + counter*2] = [PTBR + counter*2];
+    [MEMORY_FREE_LIST + [PTBR + counter*2]] = [MEMORY_FREE_LIST + [PTBR + counter*2]] + 1;
+    [childPgTbl + counter*2 + 1] = [PTBR + counter*2 + 1];
+    counter = counter + 1;
+endwhile;
+
+//Stack for child
+multipush(R5, R6, R7);
+R1 = GET_FREE_PAGE;
+call MEMORY_MANAGER;
+multipop(R5, R6, R7);
+
+[childPgTbl+16] = R0;
+[childPgTbl+17] = [PTBR + 17];
+
+CPSource = [PTBR + 16];
+CPDest = R0;
+call CopyPage;
+
+multipush(R5, R6, R7);
+R1 = GET_FREE_PAGE;
+call MEMORY_MANAGER;
+multipop(R5, R6, R7);
+
+[childPgTbl+18] = R0;
+[childPgTbl+19] = [PTBR + 19];
+
+CPSource = [PTBR + 18];
+CPDest = R0;
+call CopyPage;
+
+// Store BP to top of Kernel Stack of child
+[PROCESS_TABLE + childPID*16 + 12] = 1;
+[[PROCESS_TABLE + childPID*16 + 11]*512] = BP;
+
+//Set Return values
+[[PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512] = childPID;
+[[childPgTbl + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512] = 0;
+
+// Return to user mode
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 0;
+ireturn;
+
+CopyPage:
+    counter = 0;
+    while(counter < 512) do
+        [CPDest*512 + counter] = [CPSource*512 + counter];
+        counter = counter + 1;
+    endwhile;
+    return;
