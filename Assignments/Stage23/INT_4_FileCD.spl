@@ -1,0 +1,179 @@
+alias userSP R5;
+alias sysCallNo R6;
+alias phyAddrRetValue R7;
+alias PID R8;
+alias counter R9;
+alias userAreaPg R10;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+PID = [SYSTEM_STATUS_TABLE + 1];
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = userAreaPg*512 - 1;
+
+sysCallNo = [[PTBR + 2*((userSP - 5)/512)]*512 + (userSP - 5)%512];
+phyAddrRetValue = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(sysCallNo == INT_CREATE) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_CREATE;
+
+    alias fileName R11;
+    alias perm R12;
+    alias freeInx R13;
+
+    fileName = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+    perm = [[PTBR + 2*((userSP - 3)/512)]*512 + (userSP - 3)%512];
+
+    counter = 0;
+    //Checking if file is present
+    while (counter < MAX_FILE_NUM) do
+        if([INODE_TABLE + counter*16 + 1] == fileName) then
+            [phyAddrRetValue] = 0;
+            call Exit;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    counter = 0;
+    freeInx = -1;
+    //Finding a free entry in inode table
+    while (counter < MAX_FILE_NUM) do
+        if([INODE_TABLE + counter*16 + 1] == -1) then
+            freeInx = counter;
+            break;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    // Return if no free entry
+    if(freeInx == -1) then
+        [phyAddrRetValue] = -1;
+        call Exit;
+    endif;
+
+    // Set INODE TABLE entry
+    [INODE_TABLE + freeInx*16 + 0] = DATA;
+    [INODE_TABLE + freeInx*16 + 1] = fileName;
+    [INODE_TABLE + freeInx*16 + 2] = 0;
+    [INODE_TABLE + freeInx*16 + 3] = [PROCESS_TABLE + PID*16 + 3];
+    [INODE_TABLE + freeInx*16 + 4] = perm;
+    counter = 0;
+    while(counter < 4) do
+        [INODE_TABLE + freeInx*16 + 8 + counter] = -1;
+        counter = counter + 1;
+    endwhile;
+
+    // Set ROOT FILE entry
+    [ROOT_FILE + freeInx*8 + 0] = fileName;
+    [ROOT_FILE + freeInx*8 + 1] = 0;
+    [ROOT_FILE + freeInx*8 + 2] = DATA;
+    [ROOT_FILE + freeInx*8 + 3] = [USER_TABLE + [PROCESS_TABLE + PID*16 + 3]*2];
+    [ROOT_FILE + freeInx*8 + 4] = perm;
+
+    [phyAddrRetValue] = 0;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_DELETE) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_DELETE;
+    
+    alias fileName R11;
+    alias fileIdx R12;
+
+    fileName = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+
+    counter = 0;
+    fileIdx = -1;
+    //Find Index of file in INODE TABLE
+    while (counter < MAX_FILE_NUM) do
+        if([INODE_TABLE + counter*16 + 1] == fileName) then
+            fileIdx = counter;
+            break;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    // Return if file is not present
+    if(fileIdx == -1) then
+        [phyAddrRetValue] = 0;
+        call Exit;
+    endif;
+    // Return -1 if not DATA file
+    if([INODE_TABLE + fileIdx*16] != DATA) then
+        [phyAddrRetValue] = -1;
+        call Exit;
+    endif;
+    // Check if File can be deleted by current user
+    if([INODE_TABLE + fileIdx*16 + 4] == EXCLUSIVE) then
+        if
+            (([PROCESS_TABLE + PID*16 + 3] != 1) && 
+            ([PROCESS_TABLE + PID*16 + 3] != [INODE_TABLE + fileIdx*16 + 3]))
+        then
+            [phyAddrRetValue] = -1;
+            call Exit;
+        endif;
+    endif;
+
+    // Acquire lock on file
+    multipush(R5, R6, R7, R8, R9, R10, R11, R12);
+    R1 = ACQUIRE_INODE;
+    R2 = PID;
+    R3 = fileIdx;
+    call RESOURCE_MANAGER;
+    multipop(R5, R6, R7, R8, R9, R10, R11, R12);
+
+    // If file is open, dont delete
+    if([FILE_STATUS_TABLE + fileIdx*4 + 1] != -1) then
+        [phyAddrRetValue] = -2;
+        R3 = fileIdx;
+        call ReleaseLock;
+    endif;
+
+    // Release disk blocks allocated
+    counter = 0;
+    while(counter < 4) do
+        alias blkNo R13;
+
+        blkNo = [INODE_TABLE + fileIdx*16 + 8 + counter];
+        if(blkNo != -1) then
+            // Reset Dirty bit in Buffer table if present
+            if([BUFFER_TABLE + (blkNo%MAX_BUFFER)*4] == blkNo) then
+                [BUFFER_TABLE + (blkNo%MAX_BUFFER)*4 + 1] = 0;
+            endif;
+            // Call release block
+            multipush(R5, R6, R7, R8, R9, R10, R11, R12);
+            R1 = RELEASE_BLOCK;
+            R2 = blkNo;
+            R3 = PID;
+            call MEMORY_MANAGER;
+            multipop(R5, R6, R7, R8, R9, R10, R11, R12);
+        endif;
+        // Set block no to -1 in Inode table
+        [INODE_TABLE + fileIdx*16 + 8 + counter] = -1;
+
+        counter = counter + 1;
+    endwhile;
+
+    // Update ROOT_FILE and INODE_TABLE
+    counter = 0;
+    while(counter < 5) do
+       [INODE_TABLE + fileIdx*16 + counter] = -1;
+       [ROOT_FILE + fileIdx*8 + counter] = -1;
+    endwhile;
+
+    [phyAddrRetValue] = 0;
+    R3 = fileIdx;
+    call ReleaseLock;
+endif;
+
+ReleaseLock:
+    R1 = RELEASE_INODE;
+    R2 = PID;
+    call RESOURCE_MANAGER;
+    call Exit;
+
+Exit:
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;
