@@ -49,6 +49,10 @@ xi load --int=console CONSOLE_INT.xsm
 rm CONSOLE_INT.xsm
 
 #SOFT INTERRUPTS
+spl INT_4_FileCD.spl
+xi load --int=4 INT_4_FileCD.xsm
+rm INT_4_FileCD.xsm
+
 spl INT_6_Read.spl
 xi load --int=6 INT_6_Read.xsm
 rm INT_6_Read.xsm

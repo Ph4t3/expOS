@@ -8,4 +8,4 @@ wd=`pwd`
 cd $xsm_dir
 ./xsm "$@"
 cd $wd
-rm $xfs_dir/disk.xfs
+#rm $xfs_dir/disk.xfs

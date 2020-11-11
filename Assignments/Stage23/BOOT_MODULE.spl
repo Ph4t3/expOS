@@ -179,7 +179,7 @@ while (counter < 83) do
 	[MEMORY_FREE_LIST + counter] = 1;
 	counter = counter + 1;
 endwhile;
-while (counter < MAX_MEM_PAGE) do
+while (counter < NUM_MEM_PAGES) do
 	[MEMORY_FREE_LIST + counter] = 0;
 	counter = counter + 1;
 endwhile;

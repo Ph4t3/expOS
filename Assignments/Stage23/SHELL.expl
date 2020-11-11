@@ -25,6 +25,7 @@ begin
 
                 if(temp == -1) then
                     temp = exposcall("Write", -2, "Bad Command");
+                    break;
                 endif;
             else
                 temp = exposcall("Wait", pid);

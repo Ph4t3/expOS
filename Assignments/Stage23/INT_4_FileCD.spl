@@ -160,6 +160,7 @@ if(sysCallNo == INT_DELETE) then
     while(counter < 5) do
        [INODE_TABLE + fileIdx*16 + counter] = -1;
        [ROOT_FILE + fileIdx*8 + counter] = -1;
+       counter = counter + 1;
     endwhile;
 
     [phyAddrRetValue] = 0;

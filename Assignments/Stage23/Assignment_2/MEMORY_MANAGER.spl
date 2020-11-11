@@ -1,0 +1,94 @@
+alias functionNum R1;
+
+if(functionNum == GET_FREE_PAGE) then
+	//Increase WAIT_MEM_COUNT
+	[SYSTEM_STATUS_TABLE + 3] = [SYSTEM_STATUS_TABLE + 3] + 1;	
+	//If MEM_FREE_COUNT is 0
+	while ([SYSTEM_STATUS_TABLE + 2] == 0) do
+		[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 4] = WAIT_MEM;
+		multipush(R1);
+		call SCHEDULER;
+		multipop(R1);
+	endwhile;
+	//Decrement WAIT_MEM_COUNT and MEM_FREE_COUNT
+	[SYSTEM_STATUS_TABLE + 3] = [SYSTEM_STATUS_TABLE + 3] - 1;
+	[SYSTEM_STATUS_TABLE + 2] = [SYSTEM_STATUS_TABLE + 2] - 1;
+
+	//Find Free page
+	alias counter R0;
+	counter = 0;
+	while(counter < NUM_MEM_PAGES) do
+		if([MEMORY_FREE_LIST + counter] == 0) then
+			[MEMORY_FREE_LIST + counter] = 1;
+			break;
+		endif;
+		counter = counter + 1;
+	endwhile;
+	return;
+endif;
+
+if(functionNum == RELEASE_PAGE) then 
+	alias pageNo R2;
+	//Decrement in MEMORY_FREE_LIST
+	[MEMORY_FREE_LIST + pageNo] = [MEMORY_FREE_LIST + pageNo] - 1;
+	if([MEMORY_FREE_LIST + pageNo] == 0) then
+		//Update MEM_FREE_COUNT
+		[SYSTEM_STATUS_TABLE + 2] = [SYSTEM_STATUS_TABLE + 2] + 1;
+
+		//Change WAIT_MEM to READY
+		alias counter R10;
+		counter = 0;
+		while(counter < MAX_PROC_NUM) do
+			if([PROCESS_TABLE + counter*16 + 4] == WAIT_MEM) then
+				[PROCESS_TABLE + counter*16 + 4] = READY;
+			endif;
+			counter = counter + 1;
+		endwhile;
+	endif;
+	return;
+endif;
+
+if(functionNum == RELEASE_BLOCK) then
+	alias blkNo R2;
+        [DISK_FREE_LIST + blkNo] = [DISK_FREE_LIST + blkNo] - 1;
+	return;
+endif;
+
+if(functionNum == GET_CODE_PAGE) then
+    alias blkNo R2;
+    
+    //Check if blk exists in any Disk Map Table
+    R10 = 0;
+    while(R10 < MAX_PROC_NUM) do
+        R11 = 4;
+        while(R11 < 8) do
+            if([DISK_MAP_TABLE + R10*10 + R11] == blkNo) then
+                //Check if Page is already allocated
+                R12 = [PAGE_TABLE_BASE + R10*20 + R11*2];
+                if(R12 != -1) then
+                    //If yes, return increment MEM_FREE_LIST and return page
+                    [MEMORY_FREE_LIST + R12] = [MEMORY_FREE_LIST + R12] + 1;
+                    R0 = R12;
+                    return;
+                endif;
+            endif;
+            R11 = R11 + 1;
+        endwhile;
+        R10 = R10 + 1;
+    endwhile;
+
+    multipush(R1, R2);
+    R1 = GET_FREE_PAGE;
+    call MEMORY_MANAGER;
+    multipop(R1, R2);
+
+    multipush(R0, R1, R2);
+    R1 = DISK_LOAD;
+    R4 = blkNo;
+    R2 = [SYSTEM_STATUS_TABLE + 1];
+    R3 = R0;
+    call DEVICE_MANAGER;
+    multipop(R0, R1, R2);
+
+    return;
+endif;
