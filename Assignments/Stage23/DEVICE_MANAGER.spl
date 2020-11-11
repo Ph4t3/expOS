@@ -2,64 +2,77 @@ alias functionNum R1;
 alias currentPID R2;
 
 if (functionNum == DISK_STORE) then
-	alias pgNo R3;
-	alias blkNo R4;
+    alias pgNo R3;
+    alias blkNo R4;
 
+    multipush(R1, R2, R3, R4);
+    functionNum = ACQUIRE_DISK;
+    call RESOURCE_MANAGER;
+    multipop(R1, R2, R3, R4);
+    
+    //Setting disk status table
+    [DISK_STATUS_TABLE + 1] = 1;
+    [DISK_STATUS_TABLE + 2] = pgNo;
+    [DISK_STATUS_TABLE + 3] = blkNo;
+
+    store(pgNo, blkNo); 
+    [PROCESS_TABLE + currentPID*16 + 4] = WAIT_DISK;
+    call SCHEDULER;
 endif;
 
 if (functionNum == DISK_LOAD) then
-	alias pgNo R3;
-	alias blkNo R4;
+    alias pgNo R3;
+    alias blkNo R4;
 
-	multipush(R1, R2, R3, R4);
-	functionNum = ACQUIRE_DISK;
-	call RESOURCE_MANAGER;
-	multipop(R1, R2, R3, R4);
+    multipush(R1, R2, R3, R4);
+    functionNum = ACQUIRE_DISK;
+    call RESOURCE_MANAGER;
+    multipop(R1, R2, R3, R4);
 
-	//Setting disk status table
-	[DISK_STATUS_TABLE + 1] = 0;
-	[DISK_STATUS_TABLE + 2] = pgNo;
-	[DISK_STATUS_TABLE + 3] = blkNo;
+    //Setting disk status table
+    [DISK_STATUS_TABLE + 1] = 0;
+    [DISK_STATUS_TABLE + 2] = pgNo;
+    [DISK_STATUS_TABLE + 3] = blkNo;
 
-	load(pgNo, blkNo);
-	[PROCESS_TABLE + currentPID*16 + 4] = WAIT_DISK;
-	call SCHEDULER;
+    load(pgNo, blkNo);
+    [PROCESS_TABLE + currentPID*16 + 4] = WAIT_DISK;
+    call SCHEDULER;
 endif;
 
 if (functionNum == TERMINAL_WRITE) then
-	alias Word R3;
+    alias Word R3;
 
-	multipush(R1, R2, R3);
-	R1 = ACQUIRE_TERMINAL;
-	call RESOURCE_MANAGER;
-	multipop(R1, R2, R3);
+    multipush(R1, R2, R3);
+    R1 = ACQUIRE_TERMINAL;
+    call RESOURCE_MANAGER;
+    multipop(R1, R2, R3);
 
-	print Word;
+    print Word;
 
-	multipush(R1, R2, R3);
-	R1 = RELEASE_TERMINAL;
-	call RESOURCE_MANAGER;
-	multipop(R1, R2, R3);
+    multipush(R1, R2, R3);
+    R1 = RELEASE_TERMINAL;
+    call RESOURCE_MANAGER;
+    multipop(R1, R2, R3);
 endif;
 
 if (functionNum == TERMINAL_READ) then
-	alias address R3;
+    alias address R3;
 
-	multipush(R1, R2, R3);
-	R1 = ACQUIRE_TERMINAL;
-	call RESOURCE_MANAGER;
-	multipop(R1, R2, R3);
-	read;
+    multipush(R1, R2, R3);
+    R1 = ACQUIRE_TERMINAL;
+    call RESOURCE_MANAGER;
+    multipop(R1, R2, R3);
+    read;
 
-	//Scheduling next Process while waiting
-	[PROCESS_TABLE + 16*currentPID + 4] = WAIT_TERMINAL;
-	multipush(R1, R2, R3);
-	call SCHEDULER;
-	
-	//After return from scheduler
-	multipop(R1, R2, R3);
-	//R3 contains logical address of return variable
-	[[PTBR + 2*(address/512)]*512 + address%512] = [PROCESS_TABLE + currentPID*16 + 8];
+    //Scheduling next Process while waiting
+    [PROCESS_TABLE + 16*currentPID + 4] = WAIT_TERMINAL;
+    multipush(R1, R2, R3);
+    call SCHEDULER;
+    
+    //After return from scheduler
+    multipop(R1, R2, R3);
+    //R3 contains logical address of return variable
+    [[PTBR + 2*(address/512)]*512 + address%512] = [PROCESS_TABLE + currentPID*16 + 8];
 endif;
 return;
 

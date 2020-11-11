@@ -27,6 +27,9 @@ loadi(8, 21);
 loadi(9, 22);
 
 //----Software Interrupts----
+//Int 4
+loadi(10, 23);
+loadi(11, 24);
 //Int 6
 loadi(14, 27);
 loadi(15, 28);
@@ -115,9 +118,11 @@ endwhile;
 [DISK_MAP_TABLE + 10 + 4] = 7;
 [DISK_MAP_TABLE + 10 + 5] = 8;
 
-//Setting User Area Page for Init
+//Setting Process Table for Init
 [PROCESS_TABLE + 16 + 1] = 1;
+[PROCESS_TABLE + 16 + 3] = 1;
 [PROCESS_TABLE + 16 + 4] = CREATED;
+[PROCESS_TABLE + 16 + 9] = 0;
 [PROCESS_TABLE + 16 + 11] = 80;
 [PROCESS_TABLE + 16 + 12] = 0;
 [PROCESS_TABLE + 16 + 13] = 8*512;
@@ -144,10 +149,27 @@ while(counter < MAX_SEM_COUNT) do
     counter = counter + 1;
 endwhile;
 
+// Initialize File Status Table
+counter = 0;
+while(counter < MAX_FILE_NUM) do
+    [FILE_STATUS_TABLE + counter*4] = -1;
+    [FILE_STATUS_TABLE + counter*4 + 1] = -1;
+    counter = counter + 1;
+endwhile;
+
+// Initialize Buffer Table
+counter = 0;
+while(counter < MAX_BUFFER) do
+    [BUFFER_TABLE + counter*4 + 0] = -1;
+    [BUFFER_TABLE + counter*4 + 1] = 0;
+    [BUFFER_TABLE + counter*4 + 2] = -1;
+    counter = counter + 1;
+endwhile;
+
 //Initialize unused process table entries to TERMINATED
 counter = 2;
 while (counter < MAX_PROC_NUM) do
-	[PROCESS_TABLE + counter*16 +4] = TERMINATED;
+	[PROCESS_TABLE + counter*16 + 4] = TERMINATED;
 	counter = counter + 1;
 endwhile;
 

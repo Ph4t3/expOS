@@ -1,1 +1,60 @@
+alias userSP R6;
+alias PID R7;
+alias phyAddrRetValue R8;
+
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = INT_SHUTDOWN;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13] = SP;
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11]*512 - 1;
+
+PID = [SYSTEM_STATUS_TABLE + 1];
+phyAddrRetValue = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(([PROCESS_TABLE + PID*16 + 1] != 1) || ([PROCESS_TABLE + PID*16 + 3] != 1)) then
+    print "E: Not ROOT";
+    [phyAddrRetValue] = -1;
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;
+endif;
+
+alias pgNo R3;
+alias blkNo R4;
+
+// Store Disk Free List
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 61;
+blkNo = 2;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+
+// Store Inode Table & User table
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 59;
+blkNo = 3;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 60;
+blkNo = 4;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+
+// Store Root File
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 62;
+blkNo = 5;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+
 halt;
