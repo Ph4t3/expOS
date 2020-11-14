@@ -1,0 +1,111 @@
+alias userSP R6;
+alias PID R7;
+alias fileDescriptor R8;
+alias phyAddrRetVal R9;
+alias wordAddr R10;
+alias userAreaPg R11;
+alias opnFileIdx R12;
+alias inodeIdx R13;
+alias LseekPtr R14;
+
+PID = [SYSTEM_STATUS_TABLE + 1];
+// Set Mode Flag
+[PROCESS_TABLE + PID*16 + 9] = INT_READ;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = [PROCESS_TABLE + PID*16 + 11]*512 - 1;
+
+phyAddrRetVal  =  [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+wordAddr       = [[PTBR + 2*((userSP - 3)/512)]*512 + (userSP - 3)%512];
+fileDescriptor = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+
+// Logical to Physical Addr
+wordAddr = [PTBR + 2*(wordAddr/512)]*512 + wordAddr%512;
+
+// Terminal Read
+if(fileDescriptor == -1) then
+    multipush(R6, R7, R8, R9, R10);
+    R1 = TERMINAL_READ;
+    R2 = PID;
+    R3 = wordAddr;
+    call DEVICE_MANAGER;
+    multipop(R6, R7, R8, R9, R10);
+
+    [phyAddrRetVal] = 0;
+    call Exit;
+else
+    if((fileDescriptor < 0) || (fileDescriptor > 7)) then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+    
+    if([userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDescriptor*2] != FILE) then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+
+    opnFileIdx = [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDescriptor*2 + 1];
+    inodeIdx = [OPEN_FILE_TABLE + opnFileIdx*4];
+
+    // Acquire lock on file
+    multipush(R6, R7, R8, R9, R10, R11, R12, R13);
+    R1 = ACQUIRE_INODE;
+    R2 = PID;
+    R3 = inodeIdx;
+    call RESOURCE_MANAGER;
+    multipop(R6, R7, R8, R9, R10, R11, R12, R13);
+    // If Locking fails
+    if(R0 == -1) then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+    
+    LseekPtr = OPEN_FILE_TABLE + opnFileIdx*4 + 2;
+
+    if(inodeIdx == INODE_ROOT) then
+        // If end of ROOT_FILE
+        if([LseekPtr] == 480) then
+            [phyAddrRetVal] = -2;
+            R3 = inodeIdx;
+            call ReleaseLock;
+        endif;
+        // Copy From Root File
+        [wordAddr] = [ROOT_FILE + [LseekPtr]];
+        // increment LSeek
+        [LseekPtr] = [LseekPtr] + 1;
+    else
+        // If EOF
+        if([LseekPtr] == [INODE_TABLE + inodeIdx*16 + 2]) then
+            [phyAddrRetVal] = -2;
+            R3 = inodeIdx;
+            call ReleaseLock;
+        endif;
+
+        multipush(R6, R7, R8, R9, R10, R11, R12, R13, R14);
+        R1 = BUFFERED_READ;
+        R2 = [INODE_TABLE + inodeIdx*16 + 8 + [LseekPtr]/512]; 
+        R3 = [LseekPtr]%512; 
+        R4 = wordAddr;
+        multipop(R6, R7, R8, R9, R10, R11, R12, R13, R14);
+
+        [LseekPtr] = [LseekPtr] + 1;
+    endif;
+
+    [phyAddrRetVal] = 0;
+    R3 = inodeIdx;
+    call ReleaseLock;
+endif;
+
+ReleaseLock:
+    R1 = RELEASE_INODE;
+    R2 = PID;
+    call RESOURCE_MANAGER;
+    call Exit;
+
+Exit:
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;

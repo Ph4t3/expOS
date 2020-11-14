@@ -1,0 +1,90 @@
+alias userSP R5;
+alias sysCallNo R6;
+alias phyAddrRetValue R7;
+alias PID R8;
+alias counter R9;
+alias userAreaPg R10;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+PID = [SYSTEM_STATUS_TABLE + 1];
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = userAreaPg*512 - 1;
+
+sysCallNo = [[PTBR + 2*((userSP - 5)/512)]*512 + (userSP - 5)%512];
+phyAddrRetValue = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(sysCallNo == INT_OPEN) then
+    alias fileName R11;
+    alias fileDesc R12;
+
+    [PROCESS_TABLE + PID*16 + 9] = INT_OPEN;
+    fileName = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+
+    // Find a free per process resource entry
+    counter = 0;
+    fileDesc = -1;
+    while (counter < 8) do
+        if([userAreaPg*512 + RESOURCE_TABLE_OFFSET + counter*2] == -1) then
+            fileDesc = counter;
+            [userAreaPg*512 + RESOURCE_TABLE_OFFSET + counter*2] = FILE;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    // If no free entry
+    if(fileDesc == -1) then
+        [phyAddrRetValue] = -3;
+        call Exit;
+    endif;
+
+    // Acquire an Open File Table entry
+    multipush(R5, R6, R7, R8, R9, R10, R11, R12);
+    R1 = OPEN;
+    R2 = fileName;
+    call FILE_MANAGER;
+    multipop(R5, R6, R7, R8, R9, R10, R11, R12);
+
+    //If no free Open File Table Entry
+    if((R0 == -1) || (R0 == -2)) then
+        [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2] = -1;
+        [phyAddrRetValue] = R0;
+        call Exit;
+    endif;
+
+    [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2 + 1] = R0;
+    [phyAddrRetValue] = fileDesc;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_CLOSE) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_CLOSE;
+
+    alias fileDesc R11;
+    fileDesc = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+
+    // Check if fileDesc is valid
+    if((fileDesc < 0) || (fileDesc > 7) || ([userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2] != FILE)) then
+        [phyAddrRetValue] = -1;
+        call Exit;
+    endif;
+
+    // Close the file
+    multipush(R5, R6, R7, R8, R9, R10, R11);
+    R1 = CLOSE;
+    R2 = [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2 + 1];
+    call FILE_MANAGER;
+    multipop(R5, R6, R7, R8, R9, R10, R11);
+
+    // Invalidate the per process table entry
+    [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2] = -1;
+
+    [phyAddrRetValue] = 0;
+    call Exit;
+endif;
+
+Exit:
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;

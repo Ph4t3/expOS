@@ -29,8 +29,8 @@
 - [x] Stage 20 : Process Creation and Termination :heavy_check_mark:
 - [x] Stage 21 : Process Synchronization :heavy_check_mark:
 - [x] Stage 22 : Semaphores :heavy_check_mark:
-- [ ] Stage 23 : File Creation and Deletion
-- [ ] Stage 24 : File Read
+- [x] Stage 23 : File Creation and Deletion :heavy_check_mark:
+- [x] Stage 24 : File Read :heavy_check_mark:
 - [ ] Stage 25 : File Write
 - [ ] Stage 26 : User Management
 - [ ] Stage 27 : Pager Module
