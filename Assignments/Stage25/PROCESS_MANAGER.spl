@@ -1,8 +1,8 @@
 alias functionNum R1;
 alias PID R2;
+alias counter R5;
 
 if(functionNum == GET_PCB_ENTRY) then
-    alias counter R5;
     alias retVal R0;
     retVal = -1;
     counter = 0;
@@ -21,7 +21,6 @@ if(functionNum == GET_PCB_ENTRY) then
 endif;
 
 if(functionNum == FREE_USER_AREA_PAGE) then
-    alias counter R5;
     alias userAreaPage R6;
     userAreaPage = [PROCESS_TABLE + PID*16 + 11];
 
@@ -76,7 +75,6 @@ if(functionNum == EXIT_PROCESS) then
 
     // If now Exec
     if([PROCESS_TABLE + PID*16 + 9] != 9) then
-        alias counter R9;
         counter = 1;
         while(counter < 16) do 
             // Make waiting processes ready
@@ -97,7 +95,6 @@ endif;
 
 if(functionNum == FREE_PAGE_TABLE) then
     alias PTBRCopy  R10;
-    alias counter R11;
     PTBRCopy = PAGE_TABLE_BASE + PID*20;
 
     //Free library
@@ -110,11 +107,11 @@ if(functionNum == FREE_PAGE_TABLE) then
     while(counter < 10) do
         if([PTBRCopy + 2*counter] != -1) then
             //Free the page
-            multipush(R1, R2, R10, R11);
+            multipush(R1, R2, R5, R10);
             R1 = RELEASE_PAGE;
             R2 = [PTBRCopy + 2*counter];
             call MEMORY_MANAGER;
-            multipop(R1, R2, R10, R11);
+            multipop(R1, R2, R5, R10);
 
             //Invalidate the entries
             [PTBRCopy + 2*counter] = -1;
@@ -128,11 +125,11 @@ if(functionNum == FREE_PAGE_TABLE) then
     while(counter <= 9) do
         //Release the disk block
         if([DISK_MAP_TABLE + PID*10 + counter] != -1) then
-            multipush(R1, R2, R11);
+            multipush(R1, R2, R5);
             R1 = RELEASE_BLOCK;
             R2 = [DISK_MAP_TABLE + PID*10 + counter];
             call MEMORY_MANAGER;
-            multipop(R1, R2, R11);
+            multipop(R1, R2, R5);
         endif;
 
         //Overly complicated while loop :)
@@ -149,5 +146,55 @@ if(functionNum == FREE_PAGE_TABLE) then
         [DISK_MAP_TABLE + PID*10 + counter] = -1;
         counter = counter + 1;
     endwhile;
+    return;
+endif;
+
+if(functionNum == KILL_ALL) then
+    // Acquire all valid Inodes
+    counter = 0;        
+    while(counter < MAX_FILE_NUM) do
+        if([INODE_TABLE + counter*16 + 1] != -1) then
+            multipush(R1, R2, R5);
+            R1 = ACQUIRE_INODE;
+            R2 = PID;
+            R3 = counter;
+            call RESOURCE_MANAGER;
+            multipop(R1, R2, R5);
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    counter = 2;
+    while(counter < MAX_PROC_NUM) do
+        if((counter == SWAPPER_DAEMON) || (counter == PID)) then
+            counter = counter + 1;
+            continue;
+        endif;
+        // Terminate all running processes
+        if([PROCESS_TABLE + counter*16 + 4] != TERMINATED) then
+            multipush(R1, R2, R5);
+            R1 = EXIT_PROCESS;
+            R2 = [SYSTEM_STATUS_TABLE + 1];
+            call PROCESS_MANAGER;
+            multipop(R1, R2, R5);
+        endif;
+
+        counter = counter + 1;
+    endwhile;
+
+    // Release all valid Inodes
+    counter = 0;        
+    while(counter < MAX_FILE_NUM) do
+        if([INODE_TABLE + counter*16 + 1] != -1) then
+            multipush(R1, R2, R5);
+            R1 = RELEASE_INODE;
+            R2 = PID;
+            R3 = counter;
+            call RESOURCE_MANAGER;
+            multipop(R1, R2, R5);
+        endif;
+        counter = counter + 1;
+    endwhile;
+
     return;
 endif;
