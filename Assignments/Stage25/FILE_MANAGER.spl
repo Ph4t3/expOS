@@ -1,9 +1,9 @@
 alias functionNum R1;
 
-if(functionNum == BUFFERED_READ) then
+if((functionNum == BUFFERED_READ) || (functionNum == BUFFERED_WRITE)) then
     alias blkNo R2;
     alias offset R3;
-    alias address R4;
+    alias arg3 R4;
     alias buffNo R6;
 
     buffNo = blkNo%4;
@@ -40,7 +40,13 @@ if(functionNum == BUFFERED_READ) then
         [BUFFER_TABLE + buffNo*4 + 1] = 0;
     endif;
     
-    [address] = [(BUFFER_BASE + buffNo)*512 + offset];
+    if(functionNum == BUFFERED_READ) then
+        [arg3] = [(BUFFER_BASE + buffNo)*512 + offset];
+    else
+        [(BUFFER_BASE + buffNo)*512 + offset] = arg3;
+        //Set Dirty bit
+        [BUFFER_TABLE + buffNo*4 + 1] = 1;
+    endif;
 
     R1 = RELEASE_BUFFER;
     R2 = [SYSTEM_STATUS_TABLE + 1];
