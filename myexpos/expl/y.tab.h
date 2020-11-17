@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.5.1.  */
+/* A Bison parser, made by GNU Bison 3.7.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -31,8 +31,9 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_Y_TAB_H_INCLUDED
 # define YY_YY_Y_TAB_H_INCLUDED
@@ -44,62 +45,70 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NUM = 258,
-    ID = 259,
-    PLUS = 260,
-    MUL = 261,
-    DIV = 262,
-    MOD = 263,
-    ASGN = 264,
-    READ = 265,
-    WRITE = 266,
-    MINUS = 267,
-    NEWLINE = 268,
-    LT = 269,
-    GT = 270,
-    DEQ = 271,
-    NEQ = 272,
-    ELSE = 273,
-    IF = 274,
-    THEN = 275,
-    ENDIF = 276,
-    ENDWHILE = 277,
-    WHILE = 278,
-    DO = 279,
-    START = 280,
-    END = 281,
-    DECL = 282,
-    ENDDECL = 283,
-    INT = 284,
-    STR = 285,
-    LE = 286,
-    GE = 287,
-    NOT = 288,
-    AND = 289,
-    OR = 290,
-    MAIN = 291,
-    RETURN = 292,
-    ALLOC = 293,
-    FREE = 294,
-    INIT = 295,
-    BRK = 296,
-    CONTINUE = 297,
-    BRKP = 298,
-    TYPE = 299,
-    ENDTYPE = 300,
-    NILL = 301,
-    DEQNILL = 302,
-    NEQNILL = 303,
-    STRVAL = 304,
-    EXPOSCALL = 305
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NUM = 258,                     /* NUM  */
+    ID = 259,                      /* ID  */
+    PLUS = 260,                    /* PLUS  */
+    MUL = 261,                     /* MUL  */
+    DIV = 262,                     /* DIV  */
+    MOD = 263,                     /* MOD  */
+    ASGN = 264,                    /* ASGN  */
+    READ = 265,                    /* READ  */
+    WRITE = 266,                   /* WRITE  */
+    MINUS = 267,                   /* MINUS  */
+    NEWLINE = 268,                 /* NEWLINE  */
+    LT = 269,                      /* LT  */
+    GT = 270,                      /* GT  */
+    DEQ = 271,                     /* DEQ  */
+    NEQ = 272,                     /* NEQ  */
+    ELSE = 273,                    /* ELSE  */
+    IF = 274,                      /* IF  */
+    THEN = 275,                    /* THEN  */
+    ENDIF = 276,                   /* ENDIF  */
+    ENDWHILE = 277,                /* ENDWHILE  */
+    WHILE = 278,                   /* WHILE  */
+    DO = 279,                      /* DO  */
+    START = 280,                   /* START  */
+    END = 281,                     /* END  */
+    DECL = 282,                    /* DECL  */
+    ENDDECL = 283,                 /* ENDDECL  */
+    INT = 284,                     /* INT  */
+    STR = 285,                     /* STR  */
+    LE = 286,                      /* LE  */
+    GE = 287,                      /* GE  */
+    NOT = 288,                     /* NOT  */
+    AND = 289,                     /* AND  */
+    OR = 290,                      /* OR  */
+    MAIN = 291,                    /* MAIN  */
+    RETURN = 292,                  /* RETURN  */
+    ALLOC = 293,                   /* ALLOC  */
+    FREE = 294,                    /* FREE  */
+    INIT = 295,                    /* INIT  */
+    BRK = 296,                     /* BRK  */
+    CONTINUE = 297,                /* CONTINUE  */
+    BRKP = 298,                    /* BRKP  */
+    TYPE = 299,                    /* TYPE  */
+    ENDTYPE = 300,                 /* ENDTYPE  */
+    NILL = 301,                    /* NILL  */
+    DEQNILL = 302,                 /* DEQNILL  */
+    NEQNILL = 303,                 /* NEQNILL  */
+    STRVAL = 304,                  /* STRVAL  */
+    EXPOSCALL = 305                /* EXPOSCALL  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
+/* Token kinds.  */
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
 #define NUM 258
 #define ID 259
 #define PLUS 260
@@ -157,7 +166,7 @@ union YYSTYPE
 
     struct ASTNode *nptr;
 
-#line 161 "y.tab.h"
+#line 170 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

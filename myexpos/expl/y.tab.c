@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.5.1.  */
+/* A Bison parser, made by GNU Bison 3.7.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -34,6 +34,10 @@
 /* C LALR(1) parser skeleton written by Richard Stallman, by
    simplifying the original so-called "semantic" parser.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
 /* All symbols defined below should begin with yy or YY, to avoid
    infringing on user name space.  This should be done even for local
    variables, as they might otherwise be expanded by user macros.
@@ -41,14 +45,11 @@
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
-
 /* Identify Bison output.  */
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.5.1"
+#define YYBISON_VERSION "3.7.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -98,7 +99,7 @@
     int init_counter = 0, f_counter = 0;	//to check whether initialize is called or not.
     int wr = 0;
 
-#line 102 "y.tab.c"
+#line 103 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -121,14 +122,6 @@
 #  endif
 # endif
 
-/* Enabling verbose error messages.  */
-#ifdef YYERROR_VERBOSE
-# undef YYERROR_VERBOSE
-# define YYERROR_VERBOSE 1
-#else
-# define YYERROR_VERBOSE 0
-#endif
-
 /* Use api.header.include to #include this header
    instead of duplicating it here.  */
 #ifndef YY_YY_Y_TAB_H_INCLUDED
@@ -141,62 +134,70 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NUM = 258,
-    ID = 259,
-    PLUS = 260,
-    MUL = 261,
-    DIV = 262,
-    MOD = 263,
-    ASGN = 264,
-    READ = 265,
-    WRITE = 266,
-    MINUS = 267,
-    NEWLINE = 268,
-    LT = 269,
-    GT = 270,
-    DEQ = 271,
-    NEQ = 272,
-    ELSE = 273,
-    IF = 274,
-    THEN = 275,
-    ENDIF = 276,
-    ENDWHILE = 277,
-    WHILE = 278,
-    DO = 279,
-    START = 280,
-    END = 281,
-    DECL = 282,
-    ENDDECL = 283,
-    INT = 284,
-    STR = 285,
-    LE = 286,
-    GE = 287,
-    NOT = 288,
-    AND = 289,
-    OR = 290,
-    MAIN = 291,
-    RETURN = 292,
-    ALLOC = 293,
-    FREE = 294,
-    INIT = 295,
-    BRK = 296,
-    CONTINUE = 297,
-    BRKP = 298,
-    TYPE = 299,
-    ENDTYPE = 300,
-    NILL = 301,
-    DEQNILL = 302,
-    NEQNILL = 303,
-    STRVAL = 304,
-    EXPOSCALL = 305
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NUM = 258,                     /* NUM  */
+    ID = 259,                      /* ID  */
+    PLUS = 260,                    /* PLUS  */
+    MUL = 261,                     /* MUL  */
+    DIV = 262,                     /* DIV  */
+    MOD = 263,                     /* MOD  */
+    ASGN = 264,                    /* ASGN  */
+    READ = 265,                    /* READ  */
+    WRITE = 266,                   /* WRITE  */
+    MINUS = 267,                   /* MINUS  */
+    NEWLINE = 268,                 /* NEWLINE  */
+    LT = 269,                      /* LT  */
+    GT = 270,                      /* GT  */
+    DEQ = 271,                     /* DEQ  */
+    NEQ = 272,                     /* NEQ  */
+    ELSE = 273,                    /* ELSE  */
+    IF = 274,                      /* IF  */
+    THEN = 275,                    /* THEN  */
+    ENDIF = 276,                   /* ENDIF  */
+    ENDWHILE = 277,                /* ENDWHILE  */
+    WHILE = 278,                   /* WHILE  */
+    DO = 279,                      /* DO  */
+    START = 280,                   /* START  */
+    END = 281,                     /* END  */
+    DECL = 282,                    /* DECL  */
+    ENDDECL = 283,                 /* ENDDECL  */
+    INT = 284,                     /* INT  */
+    STR = 285,                     /* STR  */
+    LE = 286,                      /* LE  */
+    GE = 287,                      /* GE  */
+    NOT = 288,                     /* NOT  */
+    AND = 289,                     /* AND  */
+    OR = 290,                      /* OR  */
+    MAIN = 291,                    /* MAIN  */
+    RETURN = 292,                  /* RETURN  */
+    ALLOC = 293,                   /* ALLOC  */
+    FREE = 294,                    /* FREE  */
+    INIT = 295,                    /* INIT  */
+    BRK = 296,                     /* BRK  */
+    CONTINUE = 297,                /* CONTINUE  */
+    BRKP = 298,                    /* BRKP  */
+    TYPE = 299,                    /* TYPE  */
+    ENDTYPE = 300,                 /* ENDTYPE  */
+    NILL = 301,                    /* NILL  */
+    DEQNILL = 302,                 /* DEQNILL  */
+    NEQNILL = 303,                 /* NEQNILL  */
+    STRVAL = 304,                  /* STRVAL  */
+    EXPOSCALL = 305                /* EXPOSCALL  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
+/* Token kinds.  */
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
 #define NUM 258
 #define ID 259
 #define PLUS 260
@@ -254,7 +255,7 @@ union YYSTYPE
 
     struct ASTNode *nptr;
 
-#line 258 "y.tab.c"
+#line 259 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -268,6 +269,105 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 #endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+/* Symbol kind.  */
+enum yysymbol_kind_t
+{
+  YYSYMBOL_YYEMPTY = -2,
+  YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
+  YYSYMBOL_YYerror = 1,                    /* error  */
+  YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
+  YYSYMBOL_NUM = 3,                        /* NUM  */
+  YYSYMBOL_ID = 4,                         /* ID  */
+  YYSYMBOL_PLUS = 5,                       /* PLUS  */
+  YYSYMBOL_MUL = 6,                        /* MUL  */
+  YYSYMBOL_DIV = 7,                        /* DIV  */
+  YYSYMBOL_MOD = 8,                        /* MOD  */
+  YYSYMBOL_ASGN = 9,                       /* ASGN  */
+  YYSYMBOL_READ = 10,                      /* READ  */
+  YYSYMBOL_WRITE = 11,                     /* WRITE  */
+  YYSYMBOL_MINUS = 12,                     /* MINUS  */
+  YYSYMBOL_NEWLINE = 13,                   /* NEWLINE  */
+  YYSYMBOL_LT = 14,                        /* LT  */
+  YYSYMBOL_GT = 15,                        /* GT  */
+  YYSYMBOL_DEQ = 16,                       /* DEQ  */
+  YYSYMBOL_NEQ = 17,                       /* NEQ  */
+  YYSYMBOL_ELSE = 18,                      /* ELSE  */
+  YYSYMBOL_IF = 19,                        /* IF  */
+  YYSYMBOL_THEN = 20,                      /* THEN  */
+  YYSYMBOL_ENDIF = 21,                     /* ENDIF  */
+  YYSYMBOL_ENDWHILE = 22,                  /* ENDWHILE  */
+  YYSYMBOL_WHILE = 23,                     /* WHILE  */
+  YYSYMBOL_DO = 24,                        /* DO  */
+  YYSYMBOL_START = 25,                     /* START  */
+  YYSYMBOL_END = 26,                       /* END  */
+  YYSYMBOL_DECL = 27,                      /* DECL  */
+  YYSYMBOL_ENDDECL = 28,                   /* ENDDECL  */
+  YYSYMBOL_INT = 29,                       /* INT  */
+  YYSYMBOL_STR = 30,                       /* STR  */
+  YYSYMBOL_LE = 31,                        /* LE  */
+  YYSYMBOL_GE = 32,                        /* GE  */
+  YYSYMBOL_NOT = 33,                       /* NOT  */
+  YYSYMBOL_AND = 34,                       /* AND  */
+  YYSYMBOL_OR = 35,                        /* OR  */
+  YYSYMBOL_MAIN = 36,                      /* MAIN  */
+  YYSYMBOL_RETURN = 37,                    /* RETURN  */
+  YYSYMBOL_ALLOC = 38,                     /* ALLOC  */
+  YYSYMBOL_FREE = 39,                      /* FREE  */
+  YYSYMBOL_INIT = 40,                      /* INIT  */
+  YYSYMBOL_BRK = 41,                       /* BRK  */
+  YYSYMBOL_CONTINUE = 42,                  /* CONTINUE  */
+  YYSYMBOL_BRKP = 43,                      /* BRKP  */
+  YYSYMBOL_TYPE = 44,                      /* TYPE  */
+  YYSYMBOL_ENDTYPE = 45,                   /* ENDTYPE  */
+  YYSYMBOL_NILL = 46,                      /* NILL  */
+  YYSYMBOL_DEQNILL = 47,                   /* DEQNILL  */
+  YYSYMBOL_NEQNILL = 48,                   /* NEQNILL  */
+  YYSYMBOL_STRVAL = 49,                    /* STRVAL  */
+  YYSYMBOL_EXPOSCALL = 50,                 /* EXPOSCALL  */
+  YYSYMBOL_51_ = 51,                       /* '{'  */
+  YYSYMBOL_52_ = 52,                       /* '}'  */
+  YYSYMBOL_53_ = 53,                       /* ';'  */
+  YYSYMBOL_54_ = 54,                       /* '['  */
+  YYSYMBOL_55_ = 55,                       /* ']'  */
+  YYSYMBOL_56_ = 56,                       /* '('  */
+  YYSYMBOL_57_ = 57,                       /* ')'  */
+  YYSYMBOL_58_ = 58,                       /* ','  */
+  YYSYMBOL_59_ = 59,                       /* '.'  */
+  YYSYMBOL_YYACCEPT = 60,                  /* $accept  */
+  YYSYMBOL_program = 61,                   /* program  */
+  YYSYMBOL_TypeDefBlock = 62,              /* TypeDefBlock  */
+  YYSYMBOL_TypeDefList = 63,               /* TypeDefList  */
+  YYSYMBOL_TypeDef = 64,                   /* TypeDef  */
+  YYSYMBOL_FieldDeclList = 65,             /* FieldDeclList  */
+  YYSYMBOL_FieldDecl = 66,                 /* FieldDecl  */
+  YYSYMBOL_gdeclaration = 67,              /* gdeclaration  */
+  YYSYMBOL_GDeclList = 68,                 /* GDeclList  */
+  YYSYMBOL_GDecl = 69,                     /* GDecl  */
+  YYSYMBOL_Gidlist = 70,                   /* Gidlist  */
+  YYSYMBOL_FieldType = 71,                 /* FieldType  */
+  YYSYMBOL_TypeName = 72,                  /* TypeName  */
+  YYSYMBOL_FType = 73,                     /* FType  */
+  YYSYMBOL_ParamList = 74,                 /* ParamList  */
+  YYSYMBOL_Param = 75,                     /* Param  */
+  YYSYMBOL_fvlist = 76,                    /* fvlist  */
+  YYSYMBOL_fdeflist = 77,                  /* fdeflist  */
+  YYSYMBOL_fdef = 78,                      /* fdef  */
+  YYSYMBOL_LdeclBlock = 79,                /* LdeclBlock  */
+  YYSYMBOL_ldlist = 80,                    /* ldlist  */
+  YYSYMBOL_ldec = 81,                      /* ldec  */
+  YYSYMBOL_lvlist = 82,                    /* lvlist  */
+  YYSYMBOL_mainblock = 83,                 /* mainblock  */
+  YYSYMBOL_Body = 84,                      /* Body  */
+  YYSYMBOL_Retstmt = 85,                   /* Retstmt  */
+  YYSYMBOL_Slist = 86,                     /* Slist  */
+  YYSYMBOL_Stmt = 87,                      /* Stmt  */
+  YYSYMBOL_FIELD = 88,                     /* FIELD  */
+  YYSYMBOL_exprlist = 89,                  /* exprlist  */
+  YYSYMBOL_exprlist_exposcall = 90,        /* exprlist_exposcall  */
+  YYSYMBOL_Expr = 91                       /* Expr  */
+};
+typedef enum yysymbol_kind_t yysymbol_kind_t;
+
 
 
 
@@ -367,6 +467,7 @@ typedef int yytype_uint16;
 
 #define YYSIZEOF(X) YY_CAST (YYPTRDIFF_T, sizeof (X))
 
+
 /* Stored state numbers (used for stacks). */
 typedef yytype_uint8 yy_state_t;
 
@@ -384,6 +485,7 @@ typedef int yy_state_fast_t;
 #  define YY_(Msgid) Msgid
 # endif
 #endif
+
 
 #ifndef YY_ATTRIBUTE_PURE
 # if defined __GNUC__ && 2 < __GNUC__ + (96 <= __GNUC_MINOR__)
@@ -442,7 +544,7 @@ typedef int yy_state_fast_t;
 
 #define YY_ASSERT(E) ((void) (0 && (E)))
 
-#if ! defined yyoverflow || YYERROR_VERBOSE
+#if !defined yyoverflow
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -507,8 +609,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 # endif
-#endif /* ! defined yyoverflow || YYERROR_VERBOSE */
-
+#endif /* !defined yyoverflow */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
@@ -584,14 +685,16 @@ union yyalloc
 /* YYNSTATES -- Number of states.  */
 #define YYNSTATES  247
 
-#define YYUNDEFTOK  2
+/* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   305
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
    as returned by yylex, with out-of-bounds checking.  */
-#define YYTRANSLATE(YYX)                                                \
-  (0 <= (YYX) && (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
+#define YYTRANSLATE(YYX)                                \
+  (0 <= (YYX) && (YYX) <= YYMAXUTOK                     \
+   ? YY_CAST (yysymbol_kind_t, yytranslate[YYX])        \
+   : YYSYMBOL_YYUNDEF)
 
 /* YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to TOKEN-NUM
    as returned by yylex.  */
@@ -648,28 +751,41 @@ static const yytype_int16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+/** Accessing symbol of state STATE.  */
+#define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
+
+#if YYDEBUG || 0
+/* The user-facing name of the symbol whose (internal) number is
+   YYSYMBOL.  No bounds checking.  */
+static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
+
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "NUM", "ID", "PLUS", "MUL", "DIV", "MOD",
-  "ASGN", "READ", "WRITE", "MINUS", "NEWLINE", "LT", "GT", "DEQ", "NEQ",
-  "ELSE", "IF", "THEN", "ENDIF", "ENDWHILE", "WHILE", "DO", "START", "END",
-  "DECL", "ENDDECL", "INT", "STR", "LE", "GE", "NOT", "AND", "OR", "MAIN",
-  "RETURN", "ALLOC", "FREE", "INIT", "BRK", "CONTINUE", "BRKP", "TYPE",
-  "ENDTYPE", "NILL", "DEQNILL", "NEQNILL", "STRVAL", "EXPOSCALL", "'{'",
-  "'}'", "';'", "'['", "']'", "'('", "')'", "','", "'.'", "$accept",
-  "program", "TypeDefBlock", "TypeDefList", "TypeDef", "FieldDeclList",
-  "FieldDecl", "gdeclaration", "GDeclList", "GDecl", "Gidlist",
-  "FieldType", "TypeName", "FType", "ParamList", "Param", "fvlist",
-  "fdeflist", "fdef", "LdeclBlock", "ldlist", "ldec", "lvlist",
-  "mainblock", "Body", "Retstmt", "Slist", "Stmt", "FIELD", "exprlist",
-  "exprlist_exposcall", "Expr", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"", "NUM", "ID", "PLUS",
+  "MUL", "DIV", "MOD", "ASGN", "READ", "WRITE", "MINUS", "NEWLINE", "LT",
+  "GT", "DEQ", "NEQ", "ELSE", "IF", "THEN", "ENDIF", "ENDWHILE", "WHILE",
+  "DO", "START", "END", "DECL", "ENDDECL", "INT", "STR", "LE", "GE", "NOT",
+  "AND", "OR", "MAIN", "RETURN", "ALLOC", "FREE", "INIT", "BRK",
+  "CONTINUE", "BRKP", "TYPE", "ENDTYPE", "NILL", "DEQNILL", "NEQNILL",
+  "STRVAL", "EXPOSCALL", "'{'", "'}'", "';'", "'['", "']'", "'('", "')'",
+  "','", "'.'", "$accept", "program", "TypeDefBlock", "TypeDefList",
+  "TypeDef", "FieldDeclList", "FieldDecl", "gdeclaration", "GDeclList",
+  "GDecl", "Gidlist", "FieldType", "TypeName", "FType", "ParamList",
+  "Param", "fvlist", "fdeflist", "fdef", "LdeclBlock", "ldlist", "ldec",
+  "lvlist", "mainblock", "Body", "Retstmt", "Slist", "Stmt", "FIELD",
+  "exprlist", "exprlist_exposcall", "Expr", YY_NULLPTR
 };
+
+static const char *
+yysymbol_name (yysymbol_kind_t yysymbol)
+{
+  return yytname[yysymbol];
+}
 #endif
 
-# ifdef YYPRINT
+#ifdef YYPRINT
 /* YYTOKNUM[NUM] -- (External) token number corresponding to the
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_int16 yytoknum[] =
@@ -681,7 +797,7 @@ static const yytype_int16 yytoknum[] =
      295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
      305,   123,   125,    59,    91,    93,    40,    41,    44,    46
 };
-# endif
+#endif
 
 #define YYPACT_NINF (-196)
 
@@ -959,10 +1075,10 @@ static const yytype_int8 yyr2[] =
 };
 
 
+enum { YYENOMEM = -2 };
+
 #define yyerrok         (yyerrstatus = 0)
 #define yyclearin       (yychar = YYEMPTY)
-#define YYEMPTY         (-2)
-#define YYEOF           0
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -988,10 +1104,9 @@ static const yytype_int8 yyr2[] =
       }                                                           \
   while (0)
 
-/* Error token number */
-#define YYTERROR        1
-#define YYERRCODE       256
-
+/* Backward compatibility with an undocumented macro.
+   Use YYerror or YYUNDEF. */
+#define YYERRCODE YYUNDEF
 
 
 /* Enable debugging if requested.  */
@@ -1009,18 +1124,18 @@ do {                                            \
 } while (0)
 
 /* This macro is provided for backward compatibility. */
-#ifndef YY_LOCATION_PRINT
-# define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-#endif
+# ifndef YY_LOCATION_PRINT
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
 
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)                    \
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
 do {                                                                      \
   if (yydebug)                                                            \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Type, Value); \
+                  Kind, Value); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -1031,18 +1146,19 @@ do {                                                                      \
 `-----------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
+yy_symbol_value_print (FILE *yyo,
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
 {
   FILE *yyoutput = yyo;
   YYUSE (yyoutput);
   if (!yyvaluep)
     return;
 # ifdef YYPRINT
-  if (yytype < YYNTOKENS)
-    YYPRINT (yyo, yytoknum[yytype], *yyvaluep);
+  if (yykind < YYNTOKENS)
+    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
 # endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  YYUSE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -1052,12 +1168,13 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
 `---------------------------*/
 
 static void
-yy_symbol_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
+yy_symbol_print (FILE *yyo,
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
 {
   YYFPRINTF (yyo, "%s %s (",
-             yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
+             yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  yy_symbol_value_print (yyo, yytype, yyvaluep);
+  yy_symbol_value_print (yyo, yykind, yyvaluep);
   YYFPRINTF (yyo, ")");
 }
 
@@ -1090,7 +1207,8 @@ do {                                                            \
 `------------------------------------------------*/
 
 static void
-yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp, int yyrule)
+yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
+                 int yyrule)
 {
   int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -1102,9 +1220,8 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp, int yyrule)
     {
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
-                       yystos[+yyssp[yyi + 1 - yynrhs]],
-                       &yyvsp[(yyi + 1) - (yynrhs)]
-                                              );
+                       YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
+                       &yyvsp[(yyi + 1) - (yynrhs)]);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -1119,8 +1236,8 @@ do {                                    \
    multiple parsers can coexist.  */
 int yydebug;
 #else /* !YYDEBUG */
-# define YYDPRINTF(Args)
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
+# define YYDPRINTF(Args) ((void) 0)
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
@@ -1143,265 +1260,38 @@ int yydebug;
 #endif
 
 
-#if YYERROR_VERBOSE
 
-# ifndef yystrlen
-#  if defined __GLIBC__ && defined _STRING_H
-#   define yystrlen(S) (YY_CAST (YYPTRDIFF_T, strlen (S)))
-#  else
-/* Return the length of YYSTR.  */
-static YYPTRDIFF_T
-yystrlen (const char *yystr)
-{
-  YYPTRDIFF_T yylen;
-  for (yylen = 0; yystr[yylen]; yylen++)
-    continue;
-  return yylen;
-}
-#  endif
-# endif
 
-# ifndef yystpcpy
-#  if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
-#   define yystpcpy stpcpy
-#  else
-/* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
-   YYDEST.  */
-static char *
-yystpcpy (char *yydest, const char *yysrc)
-{
-  char *yyd = yydest;
-  const char *yys = yysrc;
 
-  while ((*yyd++ = *yys++) != '\0')
-    continue;
-
-  return yyd - 1;
-}
-#  endif
-# endif
-
-# ifndef yytnamerr
-/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
-   quotes and backslashes, so that it's suitable for yyerror.  The
-   heuristic is that double-quoting is unnecessary unless the string
-   contains an apostrophe, a comma, or backslash (other than
-   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
-   null, do not copy; instead, return the length of what the result
-   would have been.  */
-static YYPTRDIFF_T
-yytnamerr (char *yyres, const char *yystr)
-{
-  if (*yystr == '"')
-    {
-      YYPTRDIFF_T yyn = 0;
-      char const *yyp = yystr;
-
-      for (;;)
-        switch (*++yyp)
-          {
-          case '\'':
-          case ',':
-            goto do_not_strip_quotes;
-
-          case '\\':
-            if (*++yyp != '\\')
-              goto do_not_strip_quotes;
-            else
-              goto append;
-
-          append:
-          default:
-            if (yyres)
-              yyres[yyn] = *yyp;
-            yyn++;
-            break;
-
-          case '"':
-            if (yyres)
-              yyres[yyn] = '\0';
-            return yyn;
-          }
-    do_not_strip_quotes: ;
-    }
-
-  if (yyres)
-    return yystpcpy (yyres, yystr) - yyres;
-  else
-    return yystrlen (yystr);
-}
-# endif
-
-/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
-   about the unexpected token YYTOKEN for the state stack whose top is
-   YYSSP.
-
-   Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
-   not large enough to hold the message.  In that case, also set
-   *YYMSG_ALLOC to the required number of bytes.  Return 2 if the
-   required number of bytes is too large to store.  */
-static int
-yysyntax_error (YYPTRDIFF_T *yymsg_alloc, char **yymsg,
-                yy_state_t *yyssp, int yytoken)
-{
-  enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-  /* Internationalized format string. */
-  const char *yyformat = YY_NULLPTR;
-  /* Arguments of yyformat: reported tokens (one for the "unexpected",
-     one per "expected"). */
-  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-  /* Actual size of YYARG. */
-  int yycount = 0;
-  /* Cumulated lengths of YYARG.  */
-  YYPTRDIFF_T yysize = 0;
-
-  /* There are many possibilities here to consider:
-     - If this state is a consistent state with a default action, then
-       the only way this function was invoked is if the default action
-       is an error action.  In that case, don't check for expected
-       tokens because there are none.
-     - The only way there can be no lookahead present (in yychar) is if
-       this state is a consistent state with a default action.  Thus,
-       detecting the absence of a lookahead is sufficient to determine
-       that there is no unexpected or expected token to report.  In that
-       case, just report a simple "syntax error".
-     - Don't assume there isn't a lookahead just because this state is a
-       consistent state with a default action.  There might have been a
-       previous inconsistent state, consistent state with a non-default
-       action, or user semantic action that manipulated yychar.
-     - Of course, the expected token list depends on states to have
-       correct lookahead information, and it depends on the parser not
-       to perform extra reductions after fetching a lookahead from the
-       scanner and before detecting a syntax error.  Thus, state merging
-       (from LALR or IELR) and default reductions corrupt the expected
-       token list.  However, the list is correct for canonical LR with
-       one exception: it will still contain any token that will not be
-       accepted due to an error action in a later state.
-  */
-  if (yytoken != YYEMPTY)
-    {
-      int yyn = yypact[+*yyssp];
-      YYPTRDIFF_T yysize0 = yytnamerr (YY_NULLPTR, yytname[yytoken]);
-      yysize = yysize0;
-      yyarg[yycount++] = yytname[yytoken];
-      if (!yypact_value_is_default (yyn))
-        {
-          /* Start YYX at -YYN if negative to avoid negative indexes in
-             YYCHECK.  In other words, skip the first -YYN actions for
-             this state because they are default actions.  */
-          int yyxbegin = yyn < 0 ? -yyn : 0;
-          /* Stay within bounds of both yycheck and yytname.  */
-          int yychecklim = YYLAST - yyn + 1;
-          int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-          int yyx;
-
-          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-            if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
-                && !yytable_value_is_error (yytable[yyx + yyn]))
-              {
-                if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-                  {
-                    yycount = 1;
-                    yysize = yysize0;
-                    break;
-                  }
-                yyarg[yycount++] = yytname[yyx];
-                {
-                  YYPTRDIFF_T yysize1
-                    = yysize + yytnamerr (YY_NULLPTR, yytname[yyx]);
-                  if (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
-                    yysize = yysize1;
-                  else
-                    return 2;
-                }
-              }
-        }
-    }
-
-  switch (yycount)
-    {
-# define YYCASE_(N, S)                      \
-      case N:                               \
-        yyformat = S;                       \
-      break
-    default: /* Avoid compiler warnings. */
-      YYCASE_(0, YY_("syntax error"));
-      YYCASE_(1, YY_("syntax error, unexpected %s"));
-      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
-      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
-      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
-      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
-# undef YYCASE_
-    }
-
-  {
-    /* Don't count the "%s"s in the final size, but reserve room for
-       the terminator.  */
-    YYPTRDIFF_T yysize1 = yysize + (yystrlen (yyformat) - 2 * yycount) + 1;
-    if (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
-      yysize = yysize1;
-    else
-      return 2;
-  }
-
-  if (*yymsg_alloc < yysize)
-    {
-      *yymsg_alloc = 2 * yysize;
-      if (! (yysize <= *yymsg_alloc
-             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
-        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
-      return 1;
-    }
-
-  /* Avoid sprintf, as that infringes on the user's name space.
-     Don't have undefined behavior even if the translation
-     produced a string with the wrong number of "%s"s.  */
-  {
-    char *yyp = *yymsg;
-    int yyi = 0;
-    while ((*yyp = *yyformat) != '\0')
-      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
-        {
-          yyp += yytnamerr (yyp, yyarg[yyi++]);
-          yyformat += 2;
-        }
-      else
-        {
-          ++yyp;
-          ++yyformat;
-        }
-  }
-  return 0;
-}
-#endif /* YYERROR_VERBOSE */
 
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
 
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
+yydestruct (const char *yymsg,
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep)
 {
   YYUSE (yyvaluep);
   if (!yymsg)
     yymsg = "Deleting";
-  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
+  YY_SYMBOL_PRINT (yymsg, yykind, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  YYUSE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
-
-
-/* The lookahead symbol.  */
+/* Lookahead token kind.  */
 int yychar;
 
 /* The semantic value of the lookahead symbol.  */
 YYSTYPE yylval;
 /* Number of syntax errors so far.  */
 int yynerrs;
+
+
 
 
 /*----------.
@@ -1411,43 +1301,36 @@ int yynerrs;
 int
 yyparse (void)
 {
-    yy_state_fast_t yystate;
+    yy_state_fast_t yystate = 0;
     /* Number of tokens to shift before error messages enabled.  */
-    int yyerrstatus;
+    int yyerrstatus = 0;
 
-    /* The stacks and their tools:
-       'yyss': related to states.
-       'yyvs': related to semantic values.
-
-       Refer to the stacks through separate pointers, to allow yyoverflow
+    /* Refer to the stacks through separate pointers, to allow yyoverflow
        to reallocate them elsewhere.  */
 
-    /* The state stack.  */
+    /* Their size.  */
+    YYPTRDIFF_T yystacksize = YYINITDEPTH;
+
+    /* The state stack: array, bottom, top.  */
     yy_state_t yyssa[YYINITDEPTH];
-    yy_state_t *yyss;
-    yy_state_t *yyssp;
+    yy_state_t *yyss = yyssa;
+    yy_state_t *yyssp = yyss;
 
-    /* The semantic value stack.  */
+    /* The semantic value stack: array, bottom, top.  */
     YYSTYPE yyvsa[YYINITDEPTH];
-    YYSTYPE *yyvs;
-    YYSTYPE *yyvsp;
-
-    YYPTRDIFF_T yystacksize;
+    YYSTYPE *yyvs = yyvsa;
+    YYSTYPE *yyvsp = yyvs;
 
   int yyn;
+  /* The return value of yyparse.  */
   int yyresult;
-  /* Lookahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead symbol kind.  */
+  yysymbol_kind_t yytoken = YYSYMBOL_YYEMPTY;
   /* The variables used to return semantic value and location from the
      action routines.  */
   YYSTYPE yyval;
 
-#if YYERROR_VERBOSE
-  /* Buffer for error messages, and its allocated size.  */
-  char yymsgbuf[128];
-  char *yymsg = yymsgbuf;
-  YYPTRDIFF_T yymsg_alloc = sizeof yymsgbuf;
-#endif
+
 
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
 
@@ -1455,15 +1338,8 @@ yyparse (void)
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
 
-  yyssp = yyss = yyssa;
-  yyvsp = yyvs = yyvsa;
-  yystacksize = YYINITDEPTH;
-
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yystate = 0;
-  yyerrstatus = 0;
-  yynerrs = 0;
   yychar = YYEMPTY; /* Cause a token to be read.  */
   goto yysetstate;
 
@@ -1486,6 +1362,7 @@ yysetstate:
   YY_IGNORE_USELESS_CAST_BEGIN
   *yyssp = YY_CAST (yy_state_t, yystate);
   YY_IGNORE_USELESS_CAST_END
+  YY_STACK_PRINT (yyss, yyssp);
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
@@ -1531,7 +1408,7 @@ yysetstate:
           goto yyexhaustedlab;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
-# undef YYSTACK_RELOCATE
+#  undef YYSTACK_RELOCATE
         if (yyss1 != yyssa)
           YYSTACK_FREE (yyss1);
       }
@@ -1570,17 +1447,28 @@ yybackup:
 
   /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+  /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
   if (yychar == YYEMPTY)
     {
-      YYDPRINTF ((stderr, "Reading a token: "));
+      YYDPRINTF ((stderr, "Reading a token\n"));
       yychar = yylex ();
     }
 
   if (yychar <= YYEOF)
     {
-      yychar = yytoken = YYEOF;
+      yychar = YYEOF;
+      yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
+    }
+  else if (yychar == YYerror)
+    {
+      /* The scanner already issued an error message, process directly
+         to error recovery.  But do not keep the error token as
+         lookahead, it is too special and may lead us to an endless
+         loop in error recovery. */
+      yychar = YYUNDEF;
+      yytoken = YYSYMBOL_YYerror;
+      goto yyerrlab1;
     }
   else
     {
@@ -1650,43 +1538,43 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 2:
+  case 2: /* program: TypeDefBlock gdeclaration fdeflist mainblock  */
 #line 97 "abstree.y"
                                                        {
 			                                            fclose(intermediate);
                         								}
-#line 1659 "y.tab.c"
+#line 1547 "y.tab.c"
     break;
 
-  case 3:
+  case 3: /* program: TypeDefBlock gdeclaration mainblock  */
 #line 100 "abstree.y"
                                                  {
 		                                            fclose(intermediate);
                                     			 }
-#line 1667 "y.tab.c"
+#line 1555 "y.tab.c"
     break;
 
-  case 4:
+  case 4: /* TypeDefBlock: TYPE TypeDefList ENDTYPE  */
 #line 105 "abstree.y"
                                             {}
-#line 1673 "y.tab.c"
+#line 1561 "y.tab.c"
     break;
 
-  case 5:
+  case 5: /* TypeDefBlock: %empty  */
 #line 106 "abstree.y"
                                             {}
-#line 1679 "y.tab.c"
+#line 1567 "y.tab.c"
     break;
 
-  case 8:
+  case 8: /* TypeDef: ID '{' FieldDeclList '}'  */
 #line 113 "abstree.y"
                                      {
 	                                    TInstall((yyvsp[-3].nptr)->name, 0, Fhead); //size is initialized to 0. actual size is calculated in TInstall
                                		}
-#line 1687 "y.tab.c"
+#line 1575 "y.tab.c"
     break;
 
-  case 11:
+  case 11: /* FieldDecl: FieldType ID ';'  */
 #line 122 "abstree.y"
                                 {
 	                                if(FLookup ((yyvsp[-1].nptr)->name, Fhead) != NULL)
@@ -1696,62 +1584,62 @@ yyreduce:
 	                                }
 						            FInstall(declarationType, (yyvsp[-1].nptr)->name);
 								}
-#line 1700 "y.tab.c"
+#line 1588 "y.tab.c"
     break;
 
-  case 12:
+  case 12: /* gdeclaration: DECL GDeclList ENDDECL  */
 #line 131 "abstree.y"
                                         {
                                             start();
                                         }
-#line 1708 "y.tab.c"
+#line 1596 "y.tab.c"
     break;
 
-  case 13:
+  case 13: /* gdeclaration: %empty  */
 #line 134 "abstree.y"
                                         {
                                             start();
                                         }
-#line 1716 "y.tab.c"
+#line 1604 "y.tab.c"
     break;
 
-  case 14:
+  case 14: /* GDeclList: GDecl  */
 #line 139 "abstree.y"
                               {}
-#line 1722 "y.tab.c"
+#line 1610 "y.tab.c"
     break;
 
-  case 15:
+  case 15: /* GDeclList: GDeclList GDecl  */
 #line 140 "abstree.y"
                               {}
-#line 1728 "y.tab.c"
+#line 1616 "y.tab.c"
     break;
 
-  case 16:
+  case 16: /* GDecl: TypeName Gidlist ';'  */
 #line 143 "abstree.y"
                                 {}
-#line 1734 "y.tab.c"
+#line 1622 "y.tab.c"
     break;
 
-  case 17:
+  case 17: /* Gidlist: ID  */
 #line 146 "abstree.y"
                         {
                             verify((yyvsp[0].nptr), 1, 0, 0, NULL);
                             GInstall((yyvsp[0].nptr)->name, declarationType, 1, NULL);
                         }
-#line 1743 "y.tab.c"
+#line 1631 "y.tab.c"
     break;
 
-  case 18:
+  case 18: /* Gidlist: ID '[' NUM ']'  */
 #line 150 "abstree.y"
                        {
                             verify((yyvsp[-3].nptr), 1, 0, 0, NULL);
                             install_id((yyvsp[-3].nptr), (yyvsp[-1].nptr), declarationType);
                         }
-#line 1752 "y.tab.c"
+#line 1640 "y.tab.c"
     break;
 
-  case 19:
+  case 19: /* Gidlist: ID '(' ParamList ')'  */
 #line 154 "abstree.y"
                               {
                                 declcount++; //  to keep track of number of functions declared
@@ -1760,28 +1648,28 @@ yyreduce:
                                 Phead = NULL;
                                 Ptail = NULL;
                             }
-#line 1764 "y.tab.c"
+#line 1652 "y.tab.c"
     break;
 
-  case 20:
+  case 20: /* Gidlist: Gidlist ',' ID  */
 #line 161 "abstree.y"
                             {
                                 verify((yyvsp[0].nptr), 1, 0, 0, NULL);
                                 GInstall((yyvsp[0].nptr)->name,declarationType,1,NULL);
                             }
-#line 1773 "y.tab.c"
+#line 1661 "y.tab.c"
     break;
 
-  case 21:
+  case 21: /* Gidlist: Gidlist ',' ID '[' NUM ']'  */
 #line 165 "abstree.y"
                                   {
                                     verify((yyvsp[-3].nptr), 1, 0, 0, NULL);
                                     install_id((yyvsp[-3].nptr), (yyvsp[-1].nptr), declarationType);
                                 }
-#line 1782 "y.tab.c"
+#line 1670 "y.tab.c"
     break;
 
-  case 22:
+  case 22: /* Gidlist: Gidlist ',' ID '(' ParamList ')'  */
 #line 169 "abstree.y"
                                          {
                                             declcount++; //  to keep track of number of functions declared
@@ -1790,44 +1678,44 @@ yyreduce:
                                             Phead = NULL;
                                             Ptail = NULL;
                                         }
-#line 1794 "y.tab.c"
+#line 1682 "y.tab.c"
     break;
 
-  case 23:
+  case 23: /* FieldType: INT  */
 #line 178 "abstree.y"
                     {declarationType = TLookup("integer");}
-#line 1800 "y.tab.c"
+#line 1688 "y.tab.c"
     break;
 
-  case 24:
+  case 24: /* FieldType: STR  */
 #line 179 "abstree.y"
                     {declarationType = TLookup("string");}
-#line 1806 "y.tab.c"
+#line 1694 "y.tab.c"
     break;
 
-  case 25:
+  case 25: /* FieldType: ID  */
 #line 180 "abstree.y"
                     {
                         declarationType = TLookup((yyvsp[0].nptr)->name);
                         if (declarationType == NULL)
                             declarationType = TLookup("dummy");
                     }
-#line 1816 "y.tab.c"
+#line 1704 "y.tab.c"
     break;
 
-  case 26:
+  case 26: /* TypeName: INT  */
 #line 187 "abstree.y"
                     {declarationType = TLookup("integer");}
-#line 1822 "y.tab.c"
+#line 1710 "y.tab.c"
     break;
 
-  case 27:
+  case 27: /* TypeName: STR  */
 #line 188 "abstree.y"
                     {declarationType = TLookup("string");}
-#line 1828 "y.tab.c"
+#line 1716 "y.tab.c"
     break;
 
-  case 28:
+  case 28: /* TypeName: ID  */
 #line 189 "abstree.y"
                     {
                         declarationType = TLookup((yyvsp[0].nptr)->name);
@@ -1837,22 +1725,22 @@ yyreduce:
                             exit(1);
                         }
                     }
-#line 1841 "y.tab.c"
+#line 1729 "y.tab.c"
     break;
 
-  case 29:
+  case 29: /* FType: INT  */
 #line 199 "abstree.y"
                 {FdeclarationType = TLookup("integer");}
-#line 1847 "y.tab.c"
+#line 1735 "y.tab.c"
     break;
 
-  case 30:
+  case 30: /* FType: STR  */
 #line 200 "abstree.y"
                 {FdeclarationType = TLookup("string");}
-#line 1853 "y.tab.c"
+#line 1741 "y.tab.c"
     break;
 
-  case 31:
+  case 31: /* FType: ID  */
 #line 201 "abstree.y"
                 {
                    FdeclarationType = TLookup((yyvsp[0].nptr)->name);
@@ -1862,55 +1750,55 @@ yyreduce:
                         exit(1);
                     }
                 }
-#line 1866 "y.tab.c"
+#line 1754 "y.tab.c"
     break;
 
-  case 32:
+  case 32: /* ParamList: Param  */
 #line 211 "abstree.y"
                                     {}
-#line 1872 "y.tab.c"
+#line 1760 "y.tab.c"
     break;
 
-  case 33:
+  case 33: /* ParamList: ParamList ',' Param  */
 #line 212 "abstree.y"
                                     {}
-#line 1878 "y.tab.c"
+#line 1766 "y.tab.c"
     break;
 
-  case 34:
+  case 34: /* ParamList: %empty  */
 #line 213 "abstree.y"
                                     {}
-#line 1884 "y.tab.c"
+#line 1772 "y.tab.c"
     break;
 
-  case 35:
+  case 35: /* Param: FType fvlist  */
 #line 216 "abstree.y"
                                 {}
-#line 1890 "y.tab.c"
+#line 1778 "y.tab.c"
     break;
 
-  case 36:
+  case 36: /* fvlist: ID  */
 #line 219 "abstree.y"
                                    {
                                         verify((yyvsp[0].nptr), 0, 0, 1, NULL);
                                         PInstall((yyvsp[0].nptr)->name, FdeclarationType);
                                     }
-#line 1899 "y.tab.c"
+#line 1787 "y.tab.c"
     break;
 
-  case 37:
+  case 37: /* fdeflist: fdef  */
 #line 225 "abstree.y"
                                 {}
-#line 1905 "y.tab.c"
+#line 1793 "y.tab.c"
     break;
 
-  case 38:
+  case 38: /* fdeflist: fdeflist fdef  */
 #line 226 "abstree.y"
                                 {}
-#line 1911 "y.tab.c"
+#line 1799 "y.tab.c"
     break;
 
-  case 39:
+  case 39: /* fdef: TypeName ID '(' ParamList ')' '{' LdeclBlock Body '}'  */
 #line 229 "abstree.y"
                                                                 {
                                                                 defcount++; //  to keep track of number of functions defined
@@ -1975,58 +1863,58 @@ yyreduce:
                                                                 Lhead = NULL;
                                                                 Ltail = NULL;
                                                             }
-#line 1979 "y.tab.c"
+#line 1867 "y.tab.c"
     break;
 
-  case 40:
+  case 40: /* LdeclBlock: DECL ldlist ENDDECL  */
 #line 294 "abstree.y"
                                     {}
-#line 1985 "y.tab.c"
+#line 1873 "y.tab.c"
     break;
 
-  case 41:
+  case 41: /* LdeclBlock: %empty  */
 #line 295 "abstree.y"
                                     {}
-#line 1991 "y.tab.c"
+#line 1879 "y.tab.c"
     break;
 
-  case 42:
+  case 42: /* ldlist: ldec  */
 #line 298 "abstree.y"
                           {}
-#line 1997 "y.tab.c"
+#line 1885 "y.tab.c"
     break;
 
-  case 43:
+  case 43: /* ldlist: ldlist ldec  */
 #line 299 "abstree.y"
                           {}
-#line 2003 "y.tab.c"
+#line 1891 "y.tab.c"
     break;
 
-  case 44:
+  case 44: /* ldec: FType lvlist ';'  */
 #line 302 "abstree.y"
                            {}
-#line 2009 "y.tab.c"
+#line 1897 "y.tab.c"
     break;
 
-  case 45:
+  case 45: /* lvlist: ID  */
 #line 305 "abstree.y"
                          {
                             verify((yyvsp[0].nptr), 0, 1, 0, NULL);
                             LInstall((yyvsp[0].nptr)->name, FdeclarationType);
                          }
-#line 2018 "y.tab.c"
+#line 1906 "y.tab.c"
     break;
 
-  case 46:
+  case 46: /* lvlist: lvlist ',' ID  */
 #line 309 "abstree.y"
                          {
                             verify((yyvsp[0].nptr), 0, 1, 0, NULL);
                             LInstall((yyvsp[0].nptr)->name, FdeclarationType);
                         }
-#line 2027 "y.tab.c"
+#line 1915 "y.tab.c"
     break;
 
-  case 47:
+  case 47: /* mainblock: TypeName MAIN '(' ')' '{' LdeclBlock Body '}'  */
 #line 316 "abstree.y"
                             {
                                 if (declcount != defcount)
@@ -2057,26 +1945,26 @@ yyreduce:
                                 Lhead = NULL;
                                 Ltail = NULL;
                             }
-#line 2061 "y.tab.c"
+#line 1949 "y.tab.c"
     break;
 
-  case 48:
+  case 48: /* Body: START Slist Retstmt END  */
 #line 347 "abstree.y"
                                 {
                                     (yyval.nptr) = TreeCreate(TLookup("void"), DEFAULT, NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[-1].nptr), NULL);
                                 }
-#line 2069 "y.tab.c"
+#line 1957 "y.tab.c"
     break;
 
-  case 49:
+  case 49: /* Body: START Retstmt END  */
 #line 350 "abstree.y"
                                 {
                                     (yyval.nptr) = TreeCreate(TLookup("void"), DEFAULT, NULL, NULL, NULL, NULL, (yyvsp[-1].nptr), NULL);
                                 }
-#line 2077 "y.tab.c"
+#line 1965 "y.tab.c"
     break;
 
-  case 50:
+  case 50: /* Retstmt: RETURN Expr ';'  */
 #line 355 "abstree.y"
                             {
                                 if (declarationType == (yyvsp[-1].nptr)->type)
@@ -2087,10 +1975,10 @@ yyreduce:
                                     exit(1);
                                 }
                             }
-#line 2091 "y.tab.c"
+#line 1979 "y.tab.c"
     break;
 
-  case 51:
+  case 51: /* Slist: Slist Stmt  */
 #line 366 "abstree.y"
                         {
                             head = (struct ASTNode *)malloc(sizeof(struct ASTNode));
@@ -2099,18 +1987,18 @@ yyreduce:
                             head->ptr2 = (yyvsp[0].nptr);
                             (yyval.nptr) = head;
                         }
-#line 2103 "y.tab.c"
+#line 1991 "y.tab.c"
     break;
 
-  case 52:
+  case 52: /* Slist: Stmt  */
 #line 373 "abstree.y"
                         {
                             (yyval.nptr) = (yyvsp[0].nptr);
                         }
-#line 2111 "y.tab.c"
+#line 1999 "y.tab.c"
     break;
 
-  case 53:
+  case 53: /* Stmt: ID ASGN Expr ';'  */
 #line 378 "abstree.y"
                                  {
                                     type_assign((yyvsp[-3].nptr), NULL, 0, 0, 0, 0, 0);
@@ -2124,38 +2012,38 @@ yyreduce:
                                     	type_comp((yyvsp[-3].nptr)->type, (yyvsp[-1].nptr)->type, 'a');
                                     (yyval.nptr) = TreeCreate(TLookup("void"), NODE_ASGN, NULL, NULL, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
                                 }
-#line 2128 "y.tab.c"
+#line 2016 "y.tab.c"
     break;
 
-  case 54:
+  case 54: /* Stmt: ID '[' Expr ']' ASGN Expr ';'  */
 #line 390 "abstree.y"
                                           {
                                             type_assign_arr((yyvsp[-6].nptr), (yyvsp[-4].nptr), 0);
                                             type_comp((yyvsp[-6].nptr)->type, (yyvsp[-1].nptr)->type, 'a');
                                             (yyval.nptr) = TreeCreate(TLookup("void"), NODE_ARRAY_ASGN, NULL, NULL, NULL, (yyvsp[-6].nptr), (yyvsp[-4].nptr), (yyvsp[-1].nptr));
                                         }
-#line 2138 "y.tab.c"
+#line 2026 "y.tab.c"
     break;
 
-  case 55:
+  case 55: /* Stmt: READ '(' ID ')' ';'  */
 #line 395 "abstree.y"
                                 {
                                     type_assign((yyvsp[-2].nptr), NULL, 0, 0, 0, 0, 1);
                                     (yyval.nptr) = TreeCreate(TLookup("void"), NODE_READ, NULL, NULL, NULL, NULL, (yyvsp[-2].nptr), NULL);
                                 }
-#line 2147 "y.tab.c"
+#line 2035 "y.tab.c"
     break;
 
-  case 56:
+  case 56: /* Stmt: READ '(' ID '[' Expr ']' ')' ';'  */
 #line 399 "abstree.y"
                                              {
                                                 type_assign_arr((yyvsp[-5].nptr), (yyvsp[-3].nptr), 0);
                                                 (yyval.nptr) = TreeCreate(TLookup("void"), NODE_ARRAY_READ, NULL, NULL, NULL, NULL, (yyvsp[-5].nptr), (yyvsp[-3].nptr));
                                             }
-#line 2156 "y.tab.c"
+#line 2044 "y.tab.c"
     break;
 
-  case 57:
+  case 57: /* Stmt: WRITE '(' Expr ')' ';'  */
 #line 403 "abstree.y"
                                   {
                                     if ((yyvsp[-2].nptr)->type == TLookup("integer") || (yyvsp[-2].nptr)->type == TLookup("string"))
@@ -2177,47 +2065,47 @@ yyreduce:
                                     }
 
                                 }
-#line 2181 "y.tab.c"
+#line 2069 "y.tab.c"
     break;
 
-  case 58:
+  case 58: /* Stmt: IF '(' Expr ')' THEN Slist ENDIF ';'  */
 #line 424 "abstree.y"
                                {
                                		type_comp((yyvsp[-5].nptr)->type, TLookup("boolean"), 'i');
                                     (yyval.nptr) = TreeCreate(TLookup("void"), NODE_IF, NULL, NULL, NULL, (yyvsp[-5].nptr), (yyvsp[-2].nptr), NULL);
                                }
-#line 2190 "y.tab.c"
+#line 2078 "y.tab.c"
     break;
 
-  case 59:
+  case 59: /* Stmt: IF '(' Expr ')' THEN Slist ELSE Slist ENDIF ';'  */
 #line 429 "abstree.y"
                                 {
                                		type_comp((yyvsp[-7].nptr)->type, TLookup("boolean"), 'e');
                                     (yyval.nptr) = TreeCreate(TLookup("void"), NODE_IF_ELSE, NULL, NULL, NULL, (yyvsp[-7].nptr), (yyvsp[-4].nptr), (yyvsp[-2].nptr));
                                 }
-#line 2199 "y.tab.c"
+#line 2087 "y.tab.c"
     break;
 
-  case 60:
+  case 60: /* Stmt: WHILE '(' Expr ')' DO Slist ENDWHILE ';'  */
 #line 434 "abstree.y"
                                 {
                                		type_comp((yyvsp[-5].nptr)->type, TLookup("boolean"), 'w');
                                     (yyval.nptr) = TreeCreate(TLookup("void"), NODE_WHILE, NULL, NULL, NULL, (yyvsp[-5].nptr), (yyvsp[-2].nptr), NULL);
                                 }
-#line 2208 "y.tab.c"
+#line 2096 "y.tab.c"
     break;
 
-  case 61:
+  case 61: /* Stmt: ID ASGN ALLOC '(' ')' ';'  */
 #line 438 "abstree.y"
                                     {
         								type_assign((yyvsp[-5].nptr), NULL, 1, 0, 1, 0, 0);
                                         head = TreeCreate(TLookup("integer"), NODE_ALLOC, NULL, NULL, NULL, NULL, NULL, NULL);
                                         (yyval.nptr) = TreeCreate(TLookup("void"), NODE_ASGN, NULL, NULL, NULL, (yyvsp[-5].nptr), head, NULL);
                                     }
-#line 2218 "y.tab.c"
+#line 2106 "y.tab.c"
     break;
 
-  case 62:
+  case 62: /* Stmt: FIELD ASGN ALLOC '(' ')' ';'  */
 #line 443 "abstree.y"
                                        {
                                             head = get_last((yyvsp[-5].nptr));
@@ -2232,10 +2120,10 @@ yyreduce:
                                                 (yyval.nptr) = TreeCreate(TLookup("void"), NODE_ASGN, NULL, NULL, NULL, (yyvsp[-5].nptr), head, NULL);
                                             }
                                         }
-#line 2236 "y.tab.c"
+#line 2124 "y.tab.c"
     break;
 
-  case 63:
+  case 63: /* Stmt: FIELD ASGN FIELD ';'  */
 #line 456 "abstree.y"
                                         {
                                             head = get_last((yyvsp[-3].nptr));
@@ -2248,10 +2136,10 @@ yyreduce:
                                                 exit(1);
                                             }
                                         }
-#line 2252 "y.tab.c"
+#line 2140 "y.tab.c"
     break;
 
-  case 64:
+  case 64: /* Stmt: FIELD ASGN Expr ';'  */
 #line 467 "abstree.y"
                                                         {
                                             head = get_last((yyvsp[-3].nptr));
@@ -2263,19 +2151,19 @@ yyreduce:
                                                 exit(1);
                                             }
                                         }
-#line 2267 "y.tab.c"
+#line 2155 "y.tab.c"
     break;
 
-  case 65:
+  case 65: /* Stmt: FREE '(' ID ')' ';'  */
 #line 477 "abstree.y"
                                         {
                                             type_assign((yyvsp[-2].nptr), NULL, 1, 1, 0, 0, 0);
                                             (yyval.nptr) = TreeCreate(TLookup("void"), NODE_FREE, NULL, NULL, NULL, NULL, (yyvsp[-2].nptr), NULL);
                                         }
-#line 2276 "y.tab.c"
+#line 2164 "y.tab.c"
     break;
 
-  case 66:
+  case 66: /* Stmt: FREE '(' FIELD ')' ';'  */
 #line 481 "abstree.y"
                                             {
                                             head = get_last((yyvsp[-2].nptr));
@@ -2286,10 +2174,10 @@ yyreduce:
                                             }
                                             (yyval.nptr) = TreeCreate(TLookup("void"), NODE_FREE, NULL, NULL, NULL, NULL, (yyvsp[-2].nptr), NULL);
 	                                    }
-#line 2290 "y.tab.c"
+#line 2178 "y.tab.c"
     break;
 
-  case 67:
+  case 67: /* Stmt: READ '(' FIELD ')' ';'  */
 #line 490 "abstree.y"
                                         {
                                             head = get_last((yyvsp[-2].nptr));
@@ -2301,19 +2189,19 @@ yyreduce:
                                             }
                                             (yyval.nptr) = TreeCreate(TLookup("void"), NODE_READ, NULL, NULL, NULL, NULL, (yyvsp[-2].nptr), NULL);
 	                                    }
-#line 2305 "y.tab.c"
+#line 2193 "y.tab.c"
     break;
 
-  case 68:
+  case 68: /* Stmt: ID ASGN NILL ';'  */
 #line 500 "abstree.y"
                                                                 {
 			                                type_assign((yyvsp[-3].nptr), NULL, 1, 0, 0, 0, 0);
 			                                (yyval.nptr) = TreeCreate(TLookup("void"), NODE_ASGN, NULL, NULL, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
 			        					}
-#line 2314 "y.tab.c"
+#line 2202 "y.tab.c"
     break;
 
-  case 69:
+  case 69: /* Stmt: FIELD ASGN NILL ';'  */
 #line 504 "abstree.y"
                              {
                                 head = get_last((yyvsp[-3].nptr));
@@ -2326,10 +2214,10 @@ yyreduce:
                                 }
 								(yyval.nptr) = TreeCreate(TLookup("void"), NODE_ASGN, NULL, NULL, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
 						    }
-#line 2330 "y.tab.c"
+#line 2218 "y.tab.c"
     break;
 
-  case 70:
+  case 70: /* Stmt: ID ASGN EXPOSCALL '(' exprlist_exposcall ')' ';'  */
 #line 516 "abstree.y"
                                                                         {
                                                         if ((exprcount < 1) || (exprcount > 4))
@@ -2346,53 +2234,53 @@ yyreduce:
                                                         (yyval.nptr) = TreeCreate(TLookup("void"), NODE_ASGN, NULL, NULL, NULL, (yyvsp[-6].nptr), head1, NULL);
 
 													}
-#line 2350 "y.tab.c"
+#line 2238 "y.tab.c"
     break;
 
-  case 71:
+  case 71: /* Stmt: ID ASGN INIT '(' ')' ';'  */
 #line 531 "abstree.y"
                                                 {
                                         head = TreeCreate(TLookup("void"), NODE_INIT, NULL, NULL, NULL, NULL, NULL, NULL);
         								(yyval.nptr) = TreeCreate(TLookup("void"), NODE_ASGN, NULL, NULL, NULL, (yyvsp[-5].nptr), head, NULL);
 							        }
-#line 2359 "y.tab.c"
+#line 2247 "y.tab.c"
     break;
 
-  case 72:
+  case 72: /* Stmt: BRK ';'  */
 #line 536 "abstree.y"
                         {
                             (yyval.nptr) = TreeCreate(TLookup("void"), NODE_BRK, NULL, NULL, NULL, NULL, NULL, NULL);
                         }
-#line 2367 "y.tab.c"
+#line 2255 "y.tab.c"
     break;
 
-  case 73:
+  case 73: /* Stmt: CONTINUE ';'  */
 #line 540 "abstree.y"
                         {
                             (yyval.nptr) = TreeCreate(TLookup("void"), NODE_CONTINUE, NULL, NULL, NULL, NULL, NULL, NULL);
                         }
-#line 2375 "y.tab.c"
+#line 2263 "y.tab.c"
     break;
 
-  case 74:
+  case 74: /* Stmt: BRKP ';'  */
 #line 543 "abstree.y"
                     {
                         (yyval.nptr) = TreeCreate(TLookup("void"), NODE_BRKP, NULL, NULL, NULL, NULL, NULL, NULL);
                     }
-#line 2383 "y.tab.c"
+#line 2271 "y.tab.c"
     break;
 
-  case 75:
+  case 75: /* FIELD: ID '.' ID  */
 #line 548 "abstree.y"
                         {
                             (yyvsp[-2].nptr)->nodetype = NODE_FIELD;
                             type_assign((yyvsp[-2].nptr), (yyvsp[0].nptr), 1, 0, 0, 1, 0);
                             (yyval.nptr) = (yyvsp[-2].nptr);
                         }
-#line 2393 "y.tab.c"
+#line 2281 "y.tab.c"
     break;
 
-  case 76:
+  case 76: /* FIELD: FIELD '.' ID  */
 #line 553 "abstree.y"
                          {
                             head1 = head = get_last((yyvsp[-2].nptr));
@@ -2420,19 +2308,19 @@ yyreduce:
                                 exit(1);
                             }
                         }
-#line 2424 "y.tab.c"
+#line 2312 "y.tab.c"
     break;
 
-  case 77:
+  case 77: /* exprlist: Expr  */
 #line 581 "abstree.y"
                                 {
                                     exprcount = 1;
                                     (yyval.nptr) = (yyvsp[0].nptr);
                                 }
-#line 2433 "y.tab.c"
+#line 2321 "y.tab.c"
     break;
 
-  case 78:
+  case 78: /* exprlist: exprlist ',' Expr  */
 #line 585 "abstree.y"
                                 {
                                     indicator = 1;
@@ -2443,19 +2331,19 @@ yyreduce:
                                     head->ptr2 = (yyvsp[-2].nptr);
                                     (yyval.nptr) = head;
                                 }
-#line 2447 "y.tab.c"
+#line 2335 "y.tab.c"
     break;
 
-  case 79:
+  case 79: /* exprlist_exposcall: Expr  */
 #line 596 "abstree.y"
                           {
                                 exprcount = 1;
                                 (yyval.nptr) = (yyvsp[0].nptr);
                             }
-#line 2456 "y.tab.c"
+#line 2344 "y.tab.c"
     break;
 
-  case 80:
+  case 80: /* exprlist_exposcall: exprlist_exposcall ',' Expr  */
 #line 600 "abstree.y"
                                                   {
                                                     exprcount++;
@@ -2467,198 +2355,198 @@ yyreduce:
                                                     head->ptr1 = (yyvsp[0].nptr);
                                                     (yyval.nptr) = (yyvsp[-2].nptr);
                                                 }
-#line 2471 "y.tab.c"
+#line 2359 "y.tab.c"
     break;
 
-  case 81:
+  case 81: /* Expr: Expr PLUS Expr  */
 #line 612 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '+');
                                 (yyval.nptr) = TreeCreate(TLookup("integer"), NODE_PLUS , NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2480 "y.tab.c"
+#line 2368 "y.tab.c"
     break;
 
-  case 82:
+  case 82: /* Expr: Expr MINUS Expr  */
 #line 616 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '-');
                                 (yyval.nptr) = TreeCreate(TLookup("integer"), NODE_MINUS , NULL, NULL , NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2489 "y.tab.c"
+#line 2377 "y.tab.c"
     break;
 
-  case 83:
+  case 83: /* Expr: Expr MUL Expr  */
 #line 620 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '*');
                                 (yyval.nptr) = TreeCreate(TLookup("integer"), NODE_MUL , NULL, NULL , NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2498 "y.tab.c"
+#line 2386 "y.tab.c"
     break;
 
-  case 84:
+  case 84: /* Expr: Expr DIV Expr  */
 #line 624 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '/');
                                 (yyval.nptr) = TreeCreate(TLookup("integer"), NODE_DIV , NULL, NULL , NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2507 "y.tab.c"
+#line 2395 "y.tab.c"
     break;
 
-  case 85:
+  case 85: /* Expr: Expr MOD Expr  */
 #line 628 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '%');
                                 (yyval.nptr) = TreeCreate(TLookup("integer"), NODE_MOD , NULL, NULL , NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2516 "y.tab.c"
+#line 2404 "y.tab.c"
     break;
 
-  case 86:
+  case 86: /* Expr: Expr LT Expr  */
 #line 632 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '<');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_LT , NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2525 "y.tab.c"
+#line 2413 "y.tab.c"
     break;
 
-  case 87:
+  case 87: /* Expr: Expr LE Expr  */
 #line 636 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '#');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_LE , NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2534 "y.tab.c"
+#line 2422 "y.tab.c"
     break;
 
-  case 88:
+  case 88: /* Expr: Expr GT Expr  */
 #line 640 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '>');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_GT , NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2543 "y.tab.c"
+#line 2431 "y.tab.c"
     break;
 
-  case 89:
+  case 89: /* Expr: Expr GE Expr  */
 #line 644 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '$');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_GE , NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2552 "y.tab.c"
+#line 2440 "y.tab.c"
     break;
 
-  case 90:
+  case 90: /* Expr: Expr DEQ Expr  */
 #line 648 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, 'd');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_DEQ, NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2561 "y.tab.c"
+#line 2449 "y.tab.c"
     break;
 
-  case 91:
+  case 91: /* Expr: Expr NEQ Expr  */
 #line 652 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, 'n');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_NEQ, NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2570 "y.tab.c"
+#line 2458 "y.tab.c"
     break;
 
-  case 92:
+  case 92: /* Expr: Expr AND Expr  */
 #line 656 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '&');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_AND, NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2579 "y.tab.c"
+#line 2467 "y.tab.c"
     break;
 
-  case 93:
+  case 93: /* Expr: Expr OR Expr  */
 #line 660 "abstree.y"
                             {
                                 type_comp((yyvsp[-2].nptr)->type, (yyvsp[0].nptr)->type, '|');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_OR, NULL, NULL, NULL, (yyvsp[-2].nptr), (yyvsp[0].nptr), NULL);
                             }
-#line 2588 "y.tab.c"
+#line 2476 "y.tab.c"
     break;
 
-  case 94:
+  case 94: /* Expr: NOT Expr  */
 #line 664 "abstree.y"
                             {
                                 type_comp((yyvsp[0].nptr)->type, NULL, '!');
                                 (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_NOT, NULL, NULL, NULL, NULL, (yyvsp[0].nptr), NULL);
                             }
-#line 2597 "y.tab.c"
+#line 2485 "y.tab.c"
     break;
 
-  case 95:
+  case 95: /* Expr: '(' Expr ')'  */
 #line 668 "abstree.y"
                             {
                                 (yyval.nptr) = (yyvsp[-1].nptr);
                             }
-#line 2605 "y.tab.c"
+#line 2493 "y.tab.c"
     break;
 
-  case 96:
+  case 96: /* Expr: FIELD  */
 #line 671 "abstree.y"
                             {
                                 (yyval.nptr) = (yyvsp[0].nptr);
                             }
-#line 2613 "y.tab.c"
+#line 2501 "y.tab.c"
     break;
 
-  case 97:
+  case 97: /* Expr: NUM  */
 #line 674 "abstree.y"
                             {
                                 (yyval.nptr) = (yyvsp[0].nptr);
 				                (yyval.nptr)->type = TLookup("integer");
                             }
-#line 2622 "y.tab.c"
+#line 2510 "y.tab.c"
     break;
 
-  case 98:
+  case 98: /* Expr: MINUS NUM  */
 #line 678 "abstree.y"
                             {
                                 (yyvsp[0].nptr)->value.intval = ((yyvsp[0].nptr)->value.intval) * -1;   //negating the value
                                 (yyval.nptr) = (yyvsp[0].nptr);
 				                (yyval.nptr)->type = TLookup("integer");
                             }
-#line 2632 "y.tab.c"
+#line 2520 "y.tab.c"
     break;
 
-  case 99:
+  case 99: /* Expr: STRVAL  */
 #line 683 "abstree.y"
                                         {
         						(yyval.nptr) = (yyvsp[0].nptr);
 							    (yyval.nptr)->type = TLookup("string");
         					}
-#line 2641 "y.tab.c"
+#line 2529 "y.tab.c"
     break;
 
-  case 100:
+  case 100: /* Expr: ID  */
 #line 687 "abstree.y"
                                                 {
 				    			type_assign((yyvsp[0].nptr), NULL, 0, 0, 0, 0, 0);
 				    			(yyval.nptr) = (yyvsp[0].nptr);
 				            }
-#line 2650 "y.tab.c"
+#line 2538 "y.tab.c"
     break;
 
-  case 101:
+  case 101: /* Expr: ID '[' Expr ']'  */
 #line 691 "abstree.y"
                             {
 								type_assign_arr((yyvsp[-3].nptr), (yyvsp[-1].nptr), 0);
 								(yyval.nptr) = TreeCreate((yyvsp[-3].nptr)->type, NODE_ARRAY, NULL, NULL, NULL, (yyvsp[-3].nptr), (yyvsp[-1].nptr), NULL);
                             }
-#line 2659 "y.tab.c"
+#line 2547 "y.tab.c"
     break;
 
-  case 102:
+  case 102: /* Expr: ID '(' exprlist ')'  */
 #line 695 "abstree.y"
                             {
         						type_assign_arr((yyvsp[-3].nptr), (yyvsp[-1].nptr), 1);
@@ -2686,56 +2574,56 @@ yyreduce:
                                 else
                                     (yyval.nptr) = TreeCreate((yyvsp[-3].nptr)->type, NODE_FUNC, (yyvsp[-3].nptr)->name, NULL, Gtemp->paramlist, NULL, NULL, (yyvsp[-1].nptr));
                             }
-#line 2690 "y.tab.c"
+#line 2578 "y.tab.c"
     break;
 
-  case 103:
+  case 103: /* Expr: ID '(' ')'  */
 #line 721 "abstree.y"
                                 {
     							type_assign_arr((yyvsp[-2].nptr), NULL, 1);
                                 (yyval.nptr) = TreeCreate((yyvsp[-2].nptr)->type, NODE_FUNC, (yyvsp[-2].nptr)->name, NULL, Gtemp->paramlist, NULL, NULL, NULL);
                             }
-#line 2699 "y.tab.c"
+#line 2587 "y.tab.c"
     break;
 
-  case 104:
+  case 104: /* Expr: ID DEQNILL  */
 #line 725 "abstree.y"
                                         {
 	   						    type_assign((yyvsp[-1].nptr), NULL, 1, 0, 0, 0, 0);
 		                    	(yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_DEQ, NULL, NULL, NULL, (yyvsp[-1].nptr), (yyvsp[0].nptr), NULL);
 			    			}
-#line 2708 "y.tab.c"
+#line 2596 "y.tab.c"
     break;
 
-  case 105:
+  case 105: /* Expr: ID NEQNILL  */
 #line 729 "abstree.y"
                                 {
 	   						    type_assign((yyvsp[-1].nptr), NULL, 1, 0, 0, 0, 0);
 	                        	(yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_NEQ, NULL, NULL, NULL, (yyvsp[-1].nptr), (yyvsp[0].nptr), NULL);
 	        				}
-#line 2717 "y.tab.c"
+#line 2605 "y.tab.c"
     break;
 
-  case 106:
+  case 106: /* Expr: FIELD DEQNILL  */
 #line 733 "abstree.y"
                                 {
 	                            type_comp((yyvsp[-1].nptr), NULL, '=');
 	                            (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_DEQ, NULL, NULL, NULL, (yyvsp[-1].nptr), (yyvsp[0].nptr), NULL);
 	        				}
-#line 2726 "y.tab.c"
+#line 2614 "y.tab.c"
     break;
 
-  case 107:
+  case 107: /* Expr: FIELD NEQNILL  */
 #line 737 "abstree.y"
                                 {
 	                            type_comp((yyvsp[-1].nptr), NULL, '^');
 	                            (yyval.nptr) = TreeCreate(TLookup("boolean"), NODE_NEQ, NULL, NULL, NULL, (yyvsp[-1].nptr), (yyvsp[0].nptr), NULL);
 	        				}
-#line 2735 "y.tab.c"
+#line 2623 "y.tab.c"
     break;
 
 
-#line 2739 "y.tab.c"
+#line 2627 "y.tab.c"
 
       default: break;
     }
@@ -2750,11 +2638,10 @@ yyreduce:
      case of YYERROR or YYBACKUP, subsequent parser actions might lead
      to an incorrect destructor call or verbose syntax error message
      before the lookahead is translated.  */
-  YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
+  YY_SYMBOL_PRINT ("-> $$ =", YY_CAST (yysymbol_kind_t, yyr1[yyn]), &yyval, &yyloc);
 
   YYPOPSTACK (yylen);
   yylen = 0;
-  YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
 
@@ -2778,49 +2665,13 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
-
+  yytoken = yychar == YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
       ++yynerrs;
-#if ! YYERROR_VERBOSE
       yyerror (YY_("syntax error"));
-#else
-# define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
-                                        yyssp, yytoken)
-      {
-        char const *yymsgp = YY_("syntax error");
-        int yysyntax_error_status;
-        yysyntax_error_status = YYSYNTAX_ERROR;
-        if (yysyntax_error_status == 0)
-          yymsgp = yymsg;
-        else if (yysyntax_error_status == 1)
-          {
-            if (yymsg != yymsgbuf)
-              YYSTACK_FREE (yymsg);
-            yymsg = YY_CAST (char *, YYSTACK_ALLOC (YY_CAST (YYSIZE_T, yymsg_alloc)));
-            if (!yymsg)
-              {
-                yymsg = yymsgbuf;
-                yymsg_alloc = sizeof yymsgbuf;
-                yysyntax_error_status = 2;
-              }
-            else
-              {
-                yysyntax_error_status = YYSYNTAX_ERROR;
-                yymsgp = yymsg;
-              }
-          }
-        yyerror (yymsgp);
-        if (yysyntax_error_status == 2)
-          goto yyexhaustedlab;
-      }
-# undef YYSYNTAX_ERROR
-#endif
     }
-
-
 
   if (yyerrstatus == 3)
     {
@@ -2870,13 +2721,14 @@ yyerrorlab:
 yyerrlab1:
   yyerrstatus = 3;      /* Each real token shifted decrements this.  */
 
+  /* Pop stack until we find a state that shifts the error token.  */
   for (;;)
     {
       yyn = yypact[yystate];
       if (!yypact_value_is_default (yyn))
         {
-          yyn += YYTERROR;
-          if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR)
+          yyn += YYSYMBOL_YYerror;
+          if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYSYMBOL_YYerror)
             {
               yyn = yytable[yyn];
               if (0 < yyn)
@@ -2890,7 +2742,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-                  yystos[yystate], yyvsp);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2902,7 +2754,7 @@ yyerrlab1:
 
 
   /* Shift the error token.  */
-  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
+  YY_SYMBOL_PRINT ("Shifting", YY_ACCESSING_SYMBOL (yyn), yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -2924,20 +2776,20 @@ yyabortlab:
   goto yyreturn;
 
 
-#if !defined yyoverflow || YYERROR_VERBOSE
+#if !defined yyoverflow
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  /* Fall through.  */
+  goto yyreturn;
 #endif
 
 
-/*-----------------------------------------------------.
-| yyreturn -- parsing is finished, return the result.  |
-`-----------------------------------------------------*/
+/*-------------------------------------------------------.
+| yyreturn -- parsing is finished, clean up and return.  |
+`-------------------------------------------------------*/
 yyreturn:
   if (yychar != YYEMPTY)
     {
@@ -2954,19 +2806,17 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  yystos[+*yyssp], yyvsp);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-#if YYERROR_VERBOSE
-  if (yymsg != yymsgbuf)
-    YYSTACK_FREE (yymsg);
-#endif
+
   return yyresult;
 }
+
 #line 743 "abstree.y"
 
 
