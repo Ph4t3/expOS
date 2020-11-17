@@ -1,0 +1,168 @@
+alias functionNum R1;
+
+if((functionNum == BUFFERED_READ) || (functionNum == BUFFERED_WRITE)) then
+    alias blkNo R2;
+    alias offset R3;
+    alias arg3 R4;
+    alias buffNo R6;
+
+    buffNo = blkNo%4;
+    // Lock the buffer
+    multipush(R1, R2, R3, R4, R6);
+    R1 = ACQUIRE_BUFFER;
+    R2 = [SYSTEM_STATUS_TABLE + 1];
+    R3 = buffNo;
+    call RESOURCE_MANAGER;
+    multipop(R1, R2, R3, R4, R6);
+
+    // If different block in buffer
+    if([BUFFER_TABLE + buffNo*4] != blkNo) then
+        // If dirty bit is set
+        if([BUFFER_TABLE + buffNo*4 + 1] == 1) then
+            multipush(R1, R2, R3, R4, R6);
+            R1 = DISK_STORE;
+            R2 = [SYSTEM_STATUS_TABLE + 1];
+            R3 = BUFFER_BASE + buffNo;
+            R4 = [BUFFER_TABLE + buffNo*4];
+            call DEVICE_MANAGER;
+            multipop(R1, R2, R3, R4, R6);
+        endif;
+        // Load block to buffer
+        multipush(R1, R2, R3, R4, R6);
+        R1 = DISK_LOAD;
+        R4 = blkNo;
+        R2 = [SYSTEM_STATUS_TABLE + 1];
+        R3 = (BUFFER_BASE + buffNo);
+        call DEVICE_MANAGER;
+        multipop(R1, R2, R3, R4, R6);
+        // Set BUFFER_TABLE entry
+        [BUFFER_TABLE + buffNo*4 + 0] = blkNo;
+        [BUFFER_TABLE + buffNo*4 + 1] = 0;
+    endif;
+    
+    if(functionNum == BUFFERED_READ) then
+        [arg3] = [(BUFFER_BASE + buffNo)*512 + offset];
+    else
+        [(BUFFER_BASE + buffNo)*512 + offset] = arg3;
+        //Set Dirty bit
+        [BUFFER_TABLE + buffNo*4 + 1] = 1;
+    endif;
+
+    R1 = RELEASE_BUFFER;
+    R2 = [SYSTEM_STATUS_TABLE + 1];
+    R3 = buffNo;
+    call RESOURCE_MANAGER;
+
+    return;
+endif;
+
+if(functionNum == OPEN) then
+    alias fileName R2;
+    alias counter R6; 
+    alias inodeIndex R7;
+    alias openFileIdx R8;
+    
+    counter = 0;
+    inodeIndex = -1;
+    //Checking if file is present
+    while (counter < MAX_FILE_NUM) do
+        if([INODE_TABLE + counter*16 + 1] == fileName) then
+            inodeIndex = counter;	
+            break;
+        endif;
+        counter = counter + 1;
+    endwhile;
+    // If file is not present
+    if((inodeIndex == -1) || ([INODE_TABLE + counter*16] == EXEC)) then
+        R0 = -1;
+        return;
+    endif;
+        
+    multipush(R1, R2, R6, R7);
+    R1 = ACQUIRE_INODE;
+    R2 = [SYSTEM_STATUS_TABLE + 1];
+    R3 = inodeIndex;
+    call RESOURCE_MANAGER;
+    multipop(R1, R2, R6, R7);
+    // If not locked
+    if(R0 == -1) then
+        return;
+    endif;
+
+    // Find a Free open file table entry
+    counter = 0;
+    openFileIdx = -1;
+    while(counter < MAX_OPENFILE_NUM) do
+        if([OPEN_FILE_TABLE + counter*4] == -1) then
+            openFileIdx = counter;
+            break;
+        endif;
+        counter = counter + 1;
+    endwhile;
+    // If no free entry
+    if(openFileIdx == -1) then
+        R0 = -2;
+        R3 = inodeIndex;
+        call ReleaseInode;
+    endif;
+
+    // Set Open File Table Inode Index
+    if(fileName == "root") then
+        [OPEN_FILE_TABLE + openFileIdx*4] = INODE_ROOT;
+    else
+        // Set File Open Count
+        if([FILE_STATUS_TABLE + inodeIndex*4 + 1] == -1) then
+            [FILE_STATUS_TABLE + inodeIndex*4 + 1] = 1;
+        else
+            [FILE_STATUS_TABLE + inodeIndex*4 + 1] = [FILE_STATUS_TABLE + inodeIndex*4 + 1] + 1;
+        endif;
+        [OPEN_FILE_TABLE + openFileIdx*4] = inodeIndex;
+    endif;
+
+    // Open instance count and LSEEK
+    [OPEN_FILE_TABLE + openFileIdx*4 + 1] = 1;
+    [OPEN_FILE_TABLE + openFileIdx*4 + 2] = 0;
+
+    // Return after Releasing Inode
+    R0 = openFileIdx;
+    R3 = inodeIndex;
+    call ReleaseInode;
+endif;
+
+if(functionNum == CLOSE) then 
+    alias fileTblIdx R2;
+    alias inodeIndex R6;
+    alias fileName R7;
+
+    inodeIndex = [OPEN_FILE_TABLE + fileTblIdx*4];
+    fileName = [INODE_TABLE + inodeIndex*16 + 1];
+    // Decrement Open Instance Count 
+    [OPEN_FILE_TABLE + fileTblIdx*4 + 1] = [OPEN_FILE_TABLE + fileTblIdx*4 + 1] - 1;
+
+    // If Open Instance count is 0
+    if([OPEN_FILE_TABLE + fileTblIdx*4 + 1] == 0) then
+        // Invalidate Open File Table entries
+        [OPEN_FILE_TABLE + fileTblIdx*4 + 0] = -1;
+        [OPEN_FILE_TABLE + fileTblIdx*4 + 1] = -1;
+        [OPEN_FILE_TABLE + fileTblIdx*4 + 2] = -1;
+
+        if(fileName != "root") then
+            // Decrement File Open Count
+           [FILE_STATUS_TABLE + inodeIndex*4 + 1] = [FILE_STATUS_TABLE + inodeIndex*4 + 1] - 1; 
+        endif;
+      
+        if([FILE_STATUS_TABLE + inodeIndex*4 + 1] == 0) then
+           [FILE_STATUS_TABLE + inodeIndex*4 + 1] = -1; 
+        endif;
+    endif;
+
+    return;
+endif;
+
+ReleaseInode:
+    multipush(R0);
+    R1 = RELEASE_INODE;
+    R2 = [SYSTEM_STATUS_TABLE + 1];
+    call RESOURCE_MANAGER;
+    multipop(R0);
+    return;

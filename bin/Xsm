@@ -7,5 +7,7 @@ mv disk.xfs $xfs_dir
 wd=`pwd`
 cd $xsm_dir
 ./xsm "$@"
+cd $xfs_dir
+mv disk.xfs $wd
 cd $wd
 #rm $xfs_dir/disk.xfs
