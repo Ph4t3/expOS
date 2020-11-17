@@ -38,7 +38,7 @@ if(functionNum == FREE_USER_AREA_PAGE) then
             call RESOURCE_MANAGER;
             multipop(R1, R2, R5, R6);
         endif;
-    
+
         if([userAreaPage*512 + RESOURCE_TABLE_OFFSET + counter*2] == FILE) then
             [userAreaPage*512 + RESOURCE_TABLE_OFFSET + counter*2] = -1;
 
@@ -49,7 +49,7 @@ if(functionNum == FREE_USER_AREA_PAGE) then
             call FILE_MANAGER;
             multipop(R1, R2, R5, R6);
         endif;
-    
+
         counter = counter + 1;
     endwhile;
 
@@ -76,7 +76,7 @@ if(functionNum == EXIT_PROCESS) then
     // If now Exec
     if([PROCESS_TABLE + PID*16 + 9] != 9) then
         counter = 1;
-        while(counter < 16) do 
+        while(counter < 16) do
             // Make waiting processes ready
             if(([PROCESS_TABLE + counter*16 + 4] == WAIT_PROCESS) && ([PROCESS_TABLE + counter*16 + 5] == PID)) then
                 [PROCESS_TABLE + counter*16 + 4] = READY;
@@ -151,7 +151,7 @@ endif;
 
 if(functionNum == KILL_ALL) then
     // Acquire all valid Inodes
-    counter = 0;        
+    counter = 0;
     while(counter < MAX_FILE_NUM) do
         if([INODE_TABLE + counter*16 + 1] != -1) then
             multipush(R1, R2, R5);
@@ -183,7 +183,7 @@ if(functionNum == KILL_ALL) then
     endwhile;
 
     // Release all valid Inodes
-    counter = 0;        
+    counter = 0;
     while(counter < MAX_FILE_NUM) do
         if([INODE_TABLE + counter*16 + 1] != -1) then
             multipush(R1, R2, R5);

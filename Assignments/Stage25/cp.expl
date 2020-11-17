@@ -1,0 +1,59 @@
+int main() {
+decl
+    int temp, ret, perm, fileDis, cpDis, err;
+    string filename, copyname, data;
+enddecl
+begin
+    err = 0;
+
+    temp = exposcall("Write", -2, "File:");
+    temp = exposcall("Read", -1, filename);
+    temp = exposcall("Write", -2, "Copy Name:");
+    temp = exposcall("Read", -1, copyname);
+    temp = exposcall("Write", -2, "Copy Perm:");
+    temp = exposcall("Read", -1, perm);
+
+    fileDis = exposcall("Open", filename);
+    if(fileDis == -1) then
+        temp = exposcall("Write", -2, "ERR:");
+        temp = exposcall("Write", -2, "Not Found");
+        err = 1;
+    endif;
+    if(fileDis < -1) then
+        temp = exposcall("Write", -2, "ERR:");
+        temp = exposcall("Write", -2, "Limit Reached");
+        err = 1;
+    endif;
+
+    temp = exposcall("Delete", copyname);
+    if(temp < 0) then
+        temp = exposcall("Write", -2, "ERR:");
+        temp = exposcall("Write", -2, "Perm. Denied");
+        err = 1;
+    endif;
+    temp = exposcall("Create", copyname, perm);
+    if(temp < 0) then
+        temp = exposcall("Write", -2, "ERR:");
+        temp = exposcall("Write", -2, "Limit REached");
+        err = 1;
+    endif;
+    cpDis = exposcall("Open", copyname);
+    if(cpDis < 0) then
+        temp = exposcall("Write", -2, "ERR:");
+        temp = exposcall("Write", -2, "Limit Reached");
+        err = 1;
+    endif;
+
+    if(err != 1) then
+        ret = 0;
+        while(ret != -2)  do
+            ret = exposcall("Read",fileDis,data);
+            temp = exposcall("Write",cpDis,data);
+        endwhile;
+        temp = exposcall("Write", -2, "Success");
+        temp = exposcall("Close", fileDis);
+        temp = exposcall("Close", cpDis);
+    endif;
+    return 0;
+end
+}

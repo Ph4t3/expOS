@@ -113,9 +113,21 @@ xi load --init SHELL.xsm
 rm SHELL.xsm
 
 #Other Process 
-expl printDat.expl
-xi load --exec printDat.xsm
-rm printDat.xsm
+expl cat.expl
+xi load --exec cat.xsm
+rm cat.xsm
+
+expl ls.expl
+xi load --exec ls.xsm
+rm ls.xsm
+
+expl rm.expl
+xi load --exec rm.xsm
+rm rm.xsm
+
+expl cp.expl
+xi load --exec cp.xsm
+rm cp.xsm
 
 xi load --data sample.dat
 xi load --data numbers.dat

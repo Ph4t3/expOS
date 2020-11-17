@@ -13,6 +13,22 @@ begin
             breakpoint;
         endif;
 
+        if(command == "ls") then
+            command = "ls.xsm";
+        endif;
+
+        if(command == "rm") then
+            command = "rm.xsm";
+        endif;
+
+        if(command == "cat") then
+            command = "cat.xsm";
+        endif;
+
+        if(command == "cp") then
+            command = "cp.xsm";
+        endif;
+
         if(command == "Shutdown") then
             temp = exposcall("Shutdown");
             if(temp == -1) then
