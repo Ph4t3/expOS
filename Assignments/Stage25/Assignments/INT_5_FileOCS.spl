@@ -1,0 +1,164 @@
+alias userSP R5;
+alias sysCallNo R6;
+alias phyAddrRetVal R7;
+alias PID R8;
+alias counter R9;
+alias userAreaPg R10;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+PID = [SYSTEM_STATUS_TABLE + 1];
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = userAreaPg*512 - 1;
+
+sysCallNo = [[PTBR + 2*((userSP - 5)/512)]*512 + (userSP - 5)%512];
+phyAddrRetVal = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(sysCallNo == INT_OPEN) then
+    alias fileName R11;
+    alias fileDesc R12;
+
+    [PROCESS_TABLE + PID*16 + 9] = INT_OPEN;
+    fileName = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+
+    // Find a free per process resource entry
+    counter = 0;
+    fileDesc = -1;
+    while (counter < 8) do
+        if([userAreaPg*512 + RESOURCE_TABLE_OFFSET + counter*2] == -1) then
+            fileDesc = counter;
+            [userAreaPg*512 + RESOURCE_TABLE_OFFSET + counter*2] = FILE;
+            break;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    // If no free entry
+    if(fileDesc == -1) then
+        [phyAddrRetVal] = -3;
+        call Exit;
+    endif;
+
+    // Acquire an Open File Table entry
+    multipush(R5, R6, R7, R8, R9, R10, R11, R12);
+    R1 = OPEN;
+    R2 = fileName;
+    call FILE_MANAGER;
+    multipop(R5, R6, R7, R8, R9, R10, R11, R12);
+
+    //If no free Open File Table Entry
+    if((R0 == -1) || (R0 == -2)) then
+        [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2] = -1;
+        [phyAddrRetVal] = R0;
+        call Exit;
+    endif;
+
+    [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2 + 1] = R0;
+    [phyAddrRetVal] = fileDesc;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_CLOSE) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_CLOSE;
+
+    alias fileDesc R11;
+    fileDesc = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+
+    // Check if fileDesc is valid
+    if((fileDesc < 0) || (fileDesc > 7) || ([userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2] != FILE)) then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+
+    // Close the file
+    multipush(R5, R6, R7, R8, R9, R10, R11);
+    R1 = CLOSE;
+    R2 = [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2 + 1];
+    call FILE_MANAGER;
+    multipop(R5, R6, R7, R8, R9, R10, R11);
+
+    // Invalidate the per process table entry
+    [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2] = -1;
+
+    [phyAddrRetVal] = 0;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_SEEK) then
+    alias fileDesc R11;
+    alias opnFileIdx R12;
+    alias inodeIdx R13;
+    alias LseekPtr R14;
+    alias offset R15;
+    alias fileSize R9;
+
+    [PROCESS_TABLE + PID*16 + 9] = INT_SEEK;
+
+    fileDesc = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+    offset = [[PTBR + 2*((userSP - 3)/512)]*512 + (userSP - 3)%512];
+
+    // Check if fileDesc is valid
+    if((fileDesc < 0) || (fileDesc > 7) || ([userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2] != FILE)) then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+
+    opnFileIdx = [userAreaPg*512 + RESOURCE_TABLE_OFFSET + fileDesc*2 + 1];
+    inodeIdx = [OPEN_FILE_TABLE + opnFileIdx*4];
+
+    // Acquire lock on file
+    multipush(R6, R7, R8, R9, R10, R11, R12, R13);
+    R1 = ACQUIRE_INODE;
+    R2 = PID;
+    R3 = inodeIdx;
+    call RESOURCE_MANAGER;
+    multipop(R6, R7, R8, R9, R10, R11, R12, R13);
+    // If Locking fails
+    if(R0 == -1) then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+    // Address of Lseek
+    LseekPtr = OPEN_FILE_TABLE + opnFileIdx*4 + 2;
+
+    // Find file size
+    if(inodeIdx == INODE_ROOT) then
+        fileSize = 480;
+    else
+        fileSize = [INODE_TABLE + 16*inodeIdx + 2];
+    endif;
+    
+    // check if offset is valid
+    if(([LseekPtr] + offset) < 0) then
+        [phyAddrRetVal] = -2;
+        R3 = inodeIdx;
+        call ReleaseLock;
+    endif;
+
+    // Set Lseek value
+    if(offset == 0) then
+        [LseekPtr] = 0;
+    else
+        if(([LseekPtr] + offset) > fileSize) then
+            [LseekPtr] = fileSize;
+        else
+            [LseekPtr] = [LseekPtr] + offset;
+        endif;
+    endif;
+
+    [phyAddrRetVal] = 0;
+    R3 = inodeIdx;
+    call ReleaseLock;
+endif;
+
+ReleaseLock:
+    R1 = RELEASE_INODE;
+    R2 = PID;
+    call RESOURCE_MANAGER;
+    call Exit;
+
+Exit:
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;

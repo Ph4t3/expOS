@@ -1,0 +1,83 @@
+alias userSP R6;
+alias PID R7;
+alias phyAddrRetValue R8;
+
+PID = [SYSTEM_STATUS_TABLE + 1];
+[PROCESS_TABLE + PID*16 + 9] = INT_SHUTDOWN;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = [PROCESS_TABLE + PID*16 + 11]*512 - 1;
+
+phyAddrRetValue = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(([PROCESS_TABLE + PID*16 + 1] != 1) || ([PROCESS_TABLE + PID*16 + 3] != 1)) then
+    print "E: Not ROOT";
+    [phyAddrRetValue] = -1;
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;
+endif;
+
+// Kill all processes
+multipush(R6, R7, R8);
+R1 = KILL_ALL;
+R2 = PID;
+call PROCESS_MANAGER;
+multipop(R6, R7, R8);
+
+alias pgNo R3;
+alias blkNo R4;
+
+// Store buffer table if dirty
+alias counter R9;
+counter = 0;
+while(counter < MAX_BUFFER) do
+    if([BUFFER_TABLE + 4*counter + 1] == 1) then
+        multipush(R6, R7, R8, R9);
+        R1 = DISK_STORE;
+        R2 = PID;
+        pgNo = (BUFFER_BASE + counter);
+        blkNo = [BUFFER_TABLE + 4*counter];
+        call DEVICE_MANAGER;
+        multipop(R6, R7, R8, R9);
+    endif;
+    counter = counter + 1;
+endwhile;
+
+// Store Disk Free List
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 61;
+blkNo = 2;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+
+// Store Inode Table & User table
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 59;
+blkNo = 3;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 60;
+blkNo = 4;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+
+// Store Root File
+multipush(R6, R7, R8);
+R1 = DISK_STORE;
+R2 = PID;
+pgNo = 62;
+blkNo = 5;
+call DEVICE_MANAGER;
+multipop(R6, R7, R8);
+
+halt;
