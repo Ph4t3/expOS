@@ -27,6 +27,7 @@ if(sysCallNo == INT_SEMGET) then
         if([userAreaPg*512 + 512-16 + counter*2] == -1) then
             SEMDesc = counter;
             [userAreaPg*512 + 512-16 + counter*2] = SEMAPHORE;
+            break;
         endif;
         counter = counter + 1;
     endwhile;

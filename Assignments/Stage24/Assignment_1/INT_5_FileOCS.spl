@@ -29,6 +29,7 @@ if(sysCallNo == INT_OPEN) then
         if([userAreaPg*512 + RESOURCE_TABLE_OFFSET + counter*2] == -1) then
             fileDesc = counter;
             [userAreaPg*512 + RESOURCE_TABLE_OFFSET + counter*2] = FILE;
+            break;
         endif;
         counter = counter + 1;
     endwhile;
