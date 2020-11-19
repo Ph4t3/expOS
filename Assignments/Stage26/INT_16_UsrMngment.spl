@@ -1,0 +1,182 @@
+alias userSP R5;
+alias sysCallNo R6;
+alias phyAddrRetVal R7;
+alias PID R8;
+alias counter R9;
+alias userAreaPg R10;
+alias user R11;
+alias pwd R12;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+PID = [SYSTEM_STATUS_TABLE + 1];
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = userAreaPg*512 - 1;
+
+sysCallNo = [[PTBR + 2*((userSP - 5)/512)]*512 + (userSP - 5)%512];
+user = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+pwd = [[PTBR + 2*((userSP - 3)/512)]*512 + (userSP - 3)%512];
+phyAddrRetVal = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(sysCallNo == INT_NEWUSR) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_NEWUSR;
+    
+    alias userId R13;
+    // Check if Root user and shell process
+    if((PID != SHELL_PROCESS) || ([PROCESS_TABLE + PID*16 + 3] != 1)) then
+        [phyAddrRetVal] = -2;
+        call Exit;
+    endif;
+
+    counter = 0;
+    userId = -1;
+    while(counter < MAX_USER_NUM) do
+        // Return if user exists
+        if([USER_TABLE + counter*2] == user) then
+            [phyAddrRetVal] = -1;
+            call Exit;
+        endif;
+        // Find free entry
+        if(([USER_TABLE + counter*2] == -1) && (userId != -1)) then
+            userId = counter;
+        endif;
+        counter = counter + 1;
+    endwhile;
+    // Return if no free entry
+    if(userId == -1) then
+        [phyAddrRetVal] = -3;
+        call Exit;
+    endif;
+
+    encrypt pwd;
+
+    [USER_TABLE + userId*2] = user;
+    [USER_TABLE + userId*2 + 1] = pwd;
+
+    [phyAddrRetVal] = 0;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_REMUSR) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_REMUSR;
+
+    alias userId R13;
+    // Check if Root user and shell process
+    if
+        ((PID != SHELL_PROCESS) ||
+        ([PROCESS_TABLE + PID*16 + 3] != 1) ||
+        (user == "root") ||
+        (user == "kernel"))
+    then
+        [phyAddrRetVal] = -2;
+        call Exit;
+    endif;
+
+    counter = 0;
+    userId = -1;
+    while(counter < MAX_USER_NUM) do
+        // Find user ID
+        if([USER_TABLE + counter*2] == user) then
+            userId = counter;
+            break;
+        endif;
+        counter = counter + 1;
+    endwhile;
+    // Return user not found
+    if(userId == -1) then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+    
+    //check if user has files in system
+    counter = 0;
+    while(counter < MAX_FILE_NUM) do
+        if([ROOT_FILE + 8*counter + 3] == user) then
+            [phyAddrRetVal] = -3;
+            call Exit;
+        endif;
+        counter = counter + 1;
+    endif;
+
+    [USER_TABLE + userId*2] = -1;
+    [USER_TABLE + userId*2 + 1] = -1;
+
+    [phyAddrRetVal] = 0;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_SETPWD) then
+    alias userId R13;
+    [PROCESS_TABLE + PID*16 + 9] = INT_SETPWD;
+
+    if(PID != SHELL_PROCESS) then
+       [phyAddrRetVal] = -1;
+       call Exit;
+    endif;
+
+    counter = 0;
+    userId = -1;
+    while(counter < MAX_USER_NUM) do
+        // Find user ID
+        if([USER_TABLE + counter*2] == user) then
+            userId = counter;
+            break;
+        endif;
+        counter = counter + 1;
+    endwhile;
+    // Return user not found
+    if(userId == -1) then
+        [phyAddrRetVal] = -2;
+        call Exit;
+    endif;
+
+    if((userId != [PROCESS_TABLE + PID*16 + 3]) && ([PROCESS_TABLE + PID*16 + 3] != 1)) then
+       [phyAddrRetVal] = -1;
+       call Exit;
+    endif;
+
+    encrypt pwd;
+    [USER_TABLE + userId*2 + 1] = pwd;
+
+    [phyAddrRetVal] = 0;
+    call Exit;
+endif;
+
+if(sysCallNo == INT_GETUNAME) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_GETUNAME;
+
+    if
+        ((user < 0) ||
+        (user > (MAX_USER_NUM - 1)) ||
+        ([USER_TABLE + user*2] == -1))
+    then
+        [phyAddrRetVal] = -1;
+        call Exit;
+    endif;
+
+    [phyAddrRetVal] = [USER_TABLE + user*2];
+    call Exit;
+endif;
+
+if(sysCallNo == INT_GETUID) then
+    [PROCESS_TABLE + PID*16 + 9] = INT_GETUID;
+
+    counter = 0;
+    while(counter < MAX_USER_NUM) do
+        // Find user ID
+        if([USER_TABLE + counter*2] == user) then
+            [phyAddrRetVal] = counter;
+            call Exit;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    [phyAddrRetVal] = -1;
+    call Exit;
+endif;
+
+Exit:
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;

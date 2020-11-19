@@ -56,8 +56,8 @@ SP = userAreaPage*512 - 1;
 // Initialize per process resource table
 counter = 0;
 while (counter < 8) do
-	[userAreaPage*512 + 512-16 + counter*2] = -1;
-	[userAreaPage*512 + 512-16 + counter*2 + 1] = -1;
+	[userAreaPage*512 + RESOURCE_TABLE_OFFSET + counter*2] = -1;
+	[userAreaPage*512 + RESOURCE_TABLE_OFFSET + counter*2 + 1] = -1;
 	counter = counter + 1;
 endwhile;
 

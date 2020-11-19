@@ -34,6 +34,7 @@ while(counter < MAX_USER_NUM) do
         userId = counter;
         break;
     endif;
+    counter = counter + 1;
 endwhile;
 
 if(userId == -1) then
