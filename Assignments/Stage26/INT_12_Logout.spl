@@ -1,0 +1,40 @@
+alias userSP R6;
+alias userAreaPg R7;
+alias PID R8;
+alias phyAddrRetVal R9;
+alias counter R12;
+
+PID = [SYSTEM_STATUS_TABLE + 1];
+// Set Mode flag
+[PROCESS_TABLE + PID*16 + 9] = INT_LOGOUT;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = userAreaPg*512 - 1;
+
+phyAddrRetVal = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+
+if(PID != SHELL_PROCESS) then
+    [phyAddrRetVal] = -1;
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;
+endif;
+
+multipush(R6, R7, R8);
+R1 = KILL_ALL;
+R2 = PID;
+call PROCESS_MANAGER;
+multipop(R6, R7, R8);
+
+// Terminate SHELL and Reset user stack
+[PROCESS_TABLE + SHELL_PROCESS*16 + 4] = TERMINATED;
+[PROCESS_TABLE + SHELL_PROCESS*16 + 13] = 4096;
+// Set Entry point at start of stack
+[[PTBR + 2*8]*512] = [[PTBR + 2*4]*512 + 1];
+
+[PROCESS_TABLE + LOGIN_PROCESS*16 + 4] = READY;
+[SYSTEM_STATUS_TABLE] = KERNEL;
+call SCHEDULER;
