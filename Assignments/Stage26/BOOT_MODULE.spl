@@ -132,9 +132,9 @@ temp = PROCESS_TABLE + 16;
 counter = 0;
 temp = 77*512 + RESOURCE_TABLE_OFFSET;
 while (counter < 8) do
-	[temp + counter*2] = -1;
-	[temp + counter*2 + 1] = -1;
-	counter = counter + 1;
+    [temp + counter*2] = -1;
+    [temp + counter*2 + 1] = -1;
+    counter = counter + 1;
 endwhile;
 
 //PTBR for SHELL
@@ -194,9 +194,9 @@ temp = PROCESS_TABLE + 32;
 counter = 0;
 temp = 80*512 + RESOURCE_TABLE_OFFSET;
 while (counter < 8) do
-	[temp + counter*2] = -1;
-	[temp + counter*2 + 1] = -1;
-	counter = counter + 1;
+    [temp + counter*2] = -1;
+    [temp + counter*2 + 1] = -1;
+    counter = counter + 1;
 endwhile;
 
 // Initialize SEMAPHORE_TABLE
@@ -239,19 +239,19 @@ endwhile;
 //Initialize unused process table entries to TERMINATED
 counter = 3;
 while (counter < MAX_PROC_NUM) do
-	[PROCESS_TABLE + counter*16 + 4] = TERMINATED;
-	counter = counter + 1;
+    [PROCESS_TABLE + counter*16 + 4] = TERMINATED;
+    counter = counter + 1;
 endwhile;
 
 //Increment values of used pages in MEMORY_FREE_LIST
 counter = 0;
 while (counter < 81) do
-	[MEMORY_FREE_LIST + counter] = 1;
-	counter = counter + 1;
+    [MEMORY_FREE_LIST + counter] = 1;
+    counter = counter + 1;
 endwhile;
 while (counter < NUM_MEM_PAGES) do
-	[MEMORY_FREE_LIST + counter] = 0;
-	counter = counter + 1;
+    [MEMORY_FREE_LIST + counter] = 0;
+    counter = counter + 1;
 endwhile;
 
 [SYSTEM_STATUS_TABLE+2] = 47;   // MEM_FREE_COUNT
