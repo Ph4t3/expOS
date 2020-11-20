@@ -12,7 +12,7 @@ SP = [PROCESS_TABLE + PID*16 + 11]*512 - 1;
 
 phyAddrRetValue = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
 
-if(([PROCESS_TABLE + PID*16 + 1] != 1) || ([PROCESS_TABLE + PID*16 + 3] != 1)) then
+if(([PROCESS_TABLE + PID*16 + 1] != SHELL_PROCESS) || ([PROCESS_TABLE + PID*16 + 3] != 1)) then
     print "E: Not ROOT";
     [phyAddrRetValue] = -1;
     SP = userSP;

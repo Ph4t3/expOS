@@ -8,7 +8,9 @@ loadi(60, 4);
 loadi(62, 5);
 //INIT
 loadi(65,7);
-loadi(66,8);
+//SHELL
+loadi(67, 9);
+loadi(68, 10);
 //Exception Handler
 loadi(2, 15);
 loadi(3, 16);
@@ -51,6 +53,9 @@ loadi(23,36);
 //Int 11
 loadi(24, 37);
 loadi(25, 38);
+//Int 12
+loadi(26, 39);
+loadi(27, 40);
 //Int 13
 loadi(28, 41);
 loadi(29, 42);
@@ -60,6 +65,12 @@ loadi(31, 44);
 //Int 15
 loadi(32, 45);
 loadi(33, 46);
+//Int 16
+loadi(34, 47);
+loadi(35, 48);
+//Int 17
+loadi(36, 49);
+loadi(37, 50);
 
 //---------Modules----------
 //MOD 0
@@ -81,11 +92,53 @@ loadi(49, 61);
 loadi(50,63);
 loadi(51,64);
 
-//Process 2
-loadi(86,69);
+alias counter R0;
+alias temp R1;
 
 //PTBR for INIT
 PTBR = PAGE_TABLE_BASE + 20;
+counter = 0;
+while(counter < 10) do
+    temp = PTBR + counter*2;
+    [temp] = -1;
+    [temp + 1] = "0000";
+endwhile;
+//Library
+[PTBR+0] = 63;
+[PTBR+1] = "0100";
+[PTBR+2] = 64;
+[PTBR+3] = "0100";
+//Code
+[PTBR+8] = 65;
+[PTBR+9] = "0100";
+//Stack
+[PTBR+16] = 66;
+[PTBR+17] = "0110";
+
+//Setting Process Table for Init
+temp = PROCESS_TABLE + 16;
+[temp + 1] = 1;
+[temp + 3] = 1;
+[temp + 4] = CREATED;
+[temp + 9] = 0;
+[temp + 11] = 77;
+[temp + 12] = 0;
+[temp + 13] = 8*512;
+[temp + 14] = PAGE_TABLE_BASE + 20;
+[temp + 15] = 10;
+[66*512] = [65 * 512 + 1];
+
+// Initialize per process resource table for init
+counter = 0;
+temp = 77*512 + RESOURCE_TABLE_OFFSET;
+while (counter < 8) do
+	[temp + counter*2] = -1;
+	[temp + counter*2 + 1] = -1;
+	counter = counter + 1;
+endwhile;
+
+//PTBR for SHELL
+PTBR = PAGE_TABLE_BASE + 40;
 //Library
 [PTBR+0] = 63;
 [PTBR+1] = "0100";
@@ -93,15 +146,15 @@ PTBR = PAGE_TABLE_BASE + 20;
 [PTBR+3] = "0100";
 
 //Heap
-[PTBR+4] = 78;
-[PTBR+5] = "0110";
-[PTBR+6] = 79;
-[PTBR+7] = "0110";
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
 
 //Code
-[PTBR+8] = 65;
+[PTBR+8] = 67;
 [PTBR+9] = "0100";
-[PTBR+10] = 66;
+[PTBR+10] = 68;
 [PTBR+11] = "0100";
 [PTBR+12] = -1;
 [PTBR+13] = "0000";
@@ -109,79 +162,82 @@ PTBR = PAGE_TABLE_BASE + 20;
 [PTBR+15] = "0000";
 
 //Stack
-[PTBR+16] = 76;
+[PTBR+16] = 78;
 [PTBR+17] = "0110";
-[PTBR+18] = 77;
+[PTBR+18] = 79;
 [PTBR+19] = "0110";
 
-//Initialize DISK_MAP_TABLE for INIT
-alias counter R0;
+//Initialize DISK_MAP_TABLE for SHELL
 counter = 0;
+temp = DISK_MAP_TABLE + 20;
 while(counter < 10) do
-    [DISK_MAP_TABLE + 10 + counter] = -1;
+    [temp + counter] = -1;
     counter = counter + 1;
 endwhile;
-[DISK_MAP_TABLE + 10 + 4] = 7;
-[DISK_MAP_TABLE + 10 + 5] = 8;
+[temp + 4] = 9;
+[temp + 5] = 10;
 
-//Setting Process Table for Init
-[PROCESS_TABLE + 16 + 1] = 1;
-[PROCESS_TABLE + 16 + 3] = 1;
-[PROCESS_TABLE + 16 + 4] = CREATED;
-[PROCESS_TABLE + 16 + 9] = 0;
-[PROCESS_TABLE + 16 + 11] = 80;
-[PROCESS_TABLE + 16 + 12] = 0;
-[PROCESS_TABLE + 16 + 13] = 8*512;
-[PROCESS_TABLE + 16 + 14] = PAGE_TABLE_BASE + 20;
-[PROCESS_TABLE + 16 + 15] = 10;
-[76*512] = [65 * 512 + 1];
+//Setting Process Table for SHELL
+temp = PROCESS_TABLE + 32;
+[temp + 1] = 2;
+[temp + 3] = 1;
+[temp + 4] = TERMINATED;
+[temp + 9] = 0;
+[temp + 11] = 80;
+[temp + 12] = 0;
+[temp + 13] = 8*512;
+[temp + 14] = PAGE_TABLE_BASE + 40;
+[temp + 15] = 10;
+[78*512] = [67 * 512 + 1];
 
-alias userAreaPage R1;
-
-// Initialize per process resource table for init
+// Initialize per process resource table for SHELL
 counter = 0;
-userAreaPage = [PROCESS_TABLE + 16 + 11];
+temp = 80*512 + RESOURCE_TABLE_OFFSET;
 while (counter < 8) do
-	[userAreaPage*512 + 512-16 + counter*2] = -1;
-	[userAreaPage*512 + 512-16 + counter*2 + 1] = -1;
+	[temp + counter*2] = -1;
+	[temp + counter*2 + 1] = -1;
 	counter = counter + 1;
 endwhile;
 
 // Initialize SEMAPHORE_TABLE
 counter = 0;
 while(counter < MAX_SEM_COUNT) do
-    [SEMAPHORE_TABLE + counter*4 + 0] = -1;
-    [SEMAPHORE_TABLE + counter*4 + 1] = 0;
+    temp = SEMAPHORE_TABLE + counter*4;
+    [temp] = -1;
+    [temp + 1] = 0;
     counter = counter + 1;
 endwhile;
 
 // Initialize File Status Table
 counter = 0;
 while(counter < MAX_FILE_NUM) do
-    [FILE_STATUS_TABLE + counter*4] = -1;
-    [FILE_STATUS_TABLE + counter*4 + 1] = -1;
+    temp = FILE_STATUS_TABLE + counter*4;
+    [temp] = -1;
+    [temp + 1] = -1;
     counter = counter + 1;
 endwhile;
 
 // Initialize Buffer Table
 counter = 0;
 while(counter < MAX_BUFFER) do
-    [BUFFER_TABLE + counter*4 + 0] = -1;
-    [BUFFER_TABLE + counter*4 + 1] = 0;
-    [BUFFER_TABLE + counter*4 + 2] = -1;
+    temp = BUFFER_TABLE + counter*4;
+    [temp] = -1;
+    [temp + 1] = 0;
+    [temp + 2] = -1;
     counter = counter + 1;
 endwhile;
 
 // Initialize Open File Table
 counter = 0;
 while(counter < MAX_OPENFILE_NUM) do
-    [OPEN_FILE_TABLE + counter*4 + 0] = -1;
-    [OPEN_FILE_TABLE + counter*4 + 1] = 0;
+    temp = OPEN_FILE_TABLE + counter*4;
+    [temp] = -1;
+    [temp + 1] = 0;
     counter = counter + 1;
 endwhile;
 
 //Initialize unused process table entries to TERMINATED
-counter = 2;
+counter = 3;
 while (counter < MAX_PROC_NUM) do
 	[PROCESS_TABLE + counter*16 + 4] = TERMINATED;
 	counter = counter + 1;
@@ -189,7 +245,7 @@ endwhile;
 
 //Increment values of used pages in MEMORY_FREE_LIST
 counter = 0;
-while (counter < 83) do
+while (counter < 81) do
 	[MEMORY_FREE_LIST + counter] = 1;
 	counter = counter + 1;
 endwhile;
@@ -198,10 +254,8 @@ while (counter < NUM_MEM_PAGES) do
 	counter = counter + 1;
 endwhile;
 
-[SYSTEM_STATUS_TABLE+2] = 128-83;   // MEM_FREE_COUNT
+[SYSTEM_STATUS_TABLE+2] = 47;   // MEM_FREE_COUNT
 [SYSTEM_STATUS_TABLE+3] = 0;        // WAIT_MEM_COUNT
-
-
 //Intialize Terminal Status Table
 [TERMINAL_STATUS_TABLE] = 0;
 //Initialize Disk Status Table;
