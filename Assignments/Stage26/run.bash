@@ -85,6 +85,10 @@ spl INT_11.spl
 xi load --int=11 INT_11.xsm
 rm INT_11.xsm
 
+spl INT_12_Logout.spl
+xi load --int=12 INT_12_Logout.xsm
+rm INT_12_Logout.xsm
+
 spl INT_13_SemInit.spl
 xi load --int=13 INT_13_SemInit.xsm
 rm INT_13_SemInit.xsm
@@ -97,6 +101,14 @@ spl INT_15_Shutdown.spl
 xi load --int=15 INT_15_Shutdown.xsm
 rm INT_15_Shutdown.xsm
 
+spl INT_16_UsrMngment.spl
+xi load --int=16 INT_16_UsrMngment.xsm
+rm INT_16_UsrMngment.xsm
+
+spl INT_17_Login.spl
+xi load --int=17 INT_17_Login.xsm
+rm INT_17_Login.xsm
+
 #EXCEPTION HANDLER
 spl EX_HANDLER.spl
 xi load --exhandler EX_HANDLER.xsm
@@ -107,9 +119,14 @@ expl IDLE.expl
 xi load --idle IDLE.xsm
 rm IDLE.xsm
 
-#INIT
+#LOGIN
+expl LOGIN.expl
+xi load --init LOGIN.xsm
+rm LOGIN.xsm
+
+#SHELL
 expl SHELL.expl
-xi load --init SHELL.xsm
+xi load --shell SHELL.xsm
 rm SHELL.xsm
 
 #Other Process 

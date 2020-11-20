@@ -97,7 +97,7 @@ if(sysCallNo == INT_REMUSR) then
             call Exit;
         endif;
         counter = counter + 1;
-    endif;
+    endwhile;
 
     [USER_TABLE + userId*2] = -1;
     [USER_TABLE + userId*2 + 1] = -1;
