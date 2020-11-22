@@ -32,6 +32,6 @@
 - [x] Stage 23 : File Creation and Deletion :heavy_check_mark:
 - [x] Stage 24 : File Read :heavy_check_mark:
 - [x] Stage 25 : File Write :heavy_check_mark:
-- [ ] Stage 26 : User Management
+- [x] Stage 26 : User Management :heavy_check_mark:
 - [ ] Stage 27 : Pager Module
 - [ ] Stage 28 : Multi-Core Extension

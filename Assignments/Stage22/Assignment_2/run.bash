@@ -109,4 +109,4 @@ expl parent.expl
 xi load --exec parent.xsm
 rm parent.xsm
 
-Xsm --debug
+Xsm --debug --timer 20
