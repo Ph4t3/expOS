@@ -1,0 +1,23 @@
+int main() {
+decl
+    int temp, ret, filedis;
+    string filename, data;
+enddecl
+begin
+    temp = exposcall("Write", -2, "File:");
+    temp = exposcall("Read", -1, filename);
+    filedis = exposcall("Open", filename);
+
+    if(filedis < 0) then
+        temp = exposcall("Write", -2, "ERR:");
+        temp = exposcall("Write", -2, "Limit Reached");
+    else
+        ret = 0;
+        while(ret != -2)  do
+            ret = exposcall("Read",filedis,data);
+            temp = exposcall("Write",-2,data);
+        endwhile;
+    endif;
+    return 0;
+end
+}

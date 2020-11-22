@@ -1,0 +1,70 @@
+alias userSP R6;
+alias phyAddrRetVal R7;
+alias PID R8;
+alias userAreaPg R9;
+alias userId R10;
+alias pwd R11;
+alias counter R12;
+alias username R13;
+
+PID = [SYSTEM_STATUS_TABLE + 1];
+// Set Mode flag
+[PROCESS_TABLE + PID*16 + 9] = INT_LOGIN;
+
+//Changing User stack to kernel Stack
+userSP = SP;
+userAreaPg = [PROCESS_TABLE + PID*16 + 11];
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = userAreaPg*512 - 1;
+
+phyAddrRetVal = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
+username = [[PTBR + 2*((userSP - 4)/512)]*512 + (userSP - 4)%512];
+pwd = [[PTBR + 2*((userSP - 3)/512)]*512 + (userSP - 3)%512];
+
+if(PID != LOGIN_PROCESS) then
+    [phyAddrRetVal] = -2;
+    call Exit;
+endif;
+
+counter = 0;
+userId = -1;
+// Find User
+while(counter < MAX_USER_NUM) do
+    if([USER_TABLE + counter*2] == username) then
+        userId = counter;
+        break;
+    endif;
+    counter = counter + 1;
+endwhile;
+
+if(userId == -1) then
+    [phyAddrRetVal] = -1;
+    call Exit;
+endif;
+
+encrypt pwd;
+
+if(pwd != [USER_TABLE + userId*2 + 1]) then
+    [phyAddrRetVal] = -1;
+    call Exit;
+endif;
+
+[PROCESS_TABLE + SHELL_PROCESS*16 + 3] = userId;
+[PROCESS_TABLE + SHELL_PROCESS*16 + 4] = CREATED;
+
+[PROCESS_TABLE + LOGIN_PROCESS*16 + 4] = WAIT_PROCESS;
+[PROCESS_TABLE + LOGIN_PROCESS*16 + 5] = SHELL_PROCESS;
+
+[SYSTEM_STATUS_TABLE] = userId;
+
+multipush(R6, R7, R8);
+call SCHEDULER;
+multipop(R6, R7, R8);
+
+[phyAddrRetVal] = 0;
+call Exit;
+
+Exit:
+    SP = userSP;
+    [PROCESS_TABLE + PID*16 + 9] = 0;
+    ireturn;
