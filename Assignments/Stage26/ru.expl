@@ -1,0 +1,37 @@
+int main() {
+decl
+    int temp, ret, filedis;
+    string filename, owner, username;
+enddecl
+begin
+    temp = exposcall("Write", -2, "User:");
+    temp = exposcall("Read", -1, username);
+    
+    filedis = exposcall("Open", "root");
+    temp = exposcall("Write",-2,"Deleting...");
+
+    if(filedis < 0) then
+        temp = exposcall("Write", -2, "ERR:");
+        temp = exposcall("Write", -2, "Limit Reached");
+    else
+        ret = 0;
+        while(ret != -2)  do
+            ret = exposcall("Read", filedis, filename);
+            temp = exposcall("Seek", filedis, 2);
+            ret = exposcall("Read", filedis, owner);
+            temp = exposcall("Seek", filedis, 4);
+
+            if(filename != "-1" AND owner == username) then
+                temp = exposcall("Write",-2,filename);
+                temp = exposcall("Delete", filename);
+
+                if(temp == -2) then
+                    temp = exposcall("Write", -2, "ERR:File Open");
+                    break;
+                endif;
+            endif;
+        endwhile;
+    endif;
+    return 0;
+end
+}

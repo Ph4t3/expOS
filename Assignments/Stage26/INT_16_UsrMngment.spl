@@ -38,7 +38,7 @@ if(sysCallNo == INT_NEWUSR) then
             call Exit;
         endif;
         // Find free entry
-        if(([USER_TABLE + counter*2] == -1) && (userId != -1)) then
+        if(([USER_TABLE + counter*2] == -1) && (userId == -1)) then
             userId = counter;
         endif;
         counter = counter + 1;

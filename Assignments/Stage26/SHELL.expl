@@ -1,53 +1,63 @@
-int main() {
+int main()
+{
 decl
-    int temp, a, pid;
-    str command;
+    int temp, pid, a, flag, retcom;
+    str input, username, password;
 enddecl
+
 begin
-    a = 1;
+    a=1;
     while(a == 1) do
-        temp = exposcall("Write", -2, "$");
-        temp = exposcall("Read", -1, command);
+        temp = exposcall("Write",-2, "$");
+        temp = exposcall("Read",-1, input);
 
-        if(command == "break") then
-            breakpoint;
+        flag=0;
+        if(input == "Logout" OR input == "Shutdown") then
+            flag=1;
         endif;
 
-        if(command == "ls") then
-            command = "ls.xsm";
+        if(input == "Remusr" OR input == "Getuid" OR input == "Getuname") then
+            flag=1;
+            temp = exposcall("Read",-1, username);
         endif;
 
-        if(command == "rm") then
-            command = "rm.xsm";
+        if(input == "Newusr" OR input == "Setpwd") then
+            flag=1;
+            temp = exposcall("Read",-1, username);
+            temp = exposcall("Read",-1, password);
         endif;
 
-        if(command == "cat") then
-            command = "cat.xsm";
-        endif;
-
-        if(command == "cp") then
-            command = "cp.xsm";
-        endif;
-
-        if(command == "Shutdown") then
-            temp = exposcall("Shutdown");
-            if(temp == -1) then
-                temp = exposcall("Write", -2, "Perm. Denied");
+        if(flag==1) then
+            retcom = exposcall(input, username, password);
+            if(retcom < 0) then
+                temp = exposcall("Write",-2, "BAD COMMAND");
+            else
+                if(input == "Getuid" OR input == "Getuname") then
+                    temp = exposcall("Write",-2, retcom);
+                endif;
             endif;
         else
-            pid = exposcall("Fork");
-            if(pid == 0) then
-                temp = exposcall("Exec", command); 
-
-                if(temp == -1) then
-                    temp = exposcall("Write", -2, "Bad Command");
-                    break;
-                endif;
+            if(input == "break") then
+                breakpoint;
             else
-                temp = exposcall("Wait", pid);
+                pid = exposcall("Fork");
+                if(pid < 0) then
+                    temp = exposcall("Write",-2, "Fork Fail");
+                    continue;
+                endif;
+
+                if(pid != 0) then
+                    temp = exposcall("Wait",pid);
+                else
+                    temp = exposcall("Exec",input);
+                    if(temp != 0) then
+                        temp = exposcall("Write",-2, "BAD COMMAND");
+                        break;
+                    endif;
+                endif;
             endif;
         endif;
-    endwhile; 
+    endwhile;
 
     return 0;
 end

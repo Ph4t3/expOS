@@ -146,7 +146,15 @@ expl cp.expl
 xi load --exec cp.xsm
 rm cp.xsm
 
+expl lu.expl
+xi load --exec lu.xsm
+rm lu.xsm
+
+expl ru.expl
+xi load --exec ru.xsm
+rm ru.xsm
+
 xi load --data sample.dat
 xi load --data numbers.dat
 
-Xsm --debug
+Xsm --debug --timer 1024

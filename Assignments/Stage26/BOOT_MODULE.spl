@@ -102,6 +102,7 @@ while(counter < 10) do
     temp = PTBR + counter*2;
     [temp] = -1;
     [temp + 1] = "0000";
+    counter = counter + 1;
 endwhile;
 //Library
 [PTBR+0] = 63;
