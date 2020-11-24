@@ -35,6 +35,10 @@ spl SCHEDULER.spl
 xi load --module 5 SCHEDULER.xsm
 rm SCHEDULER.xsm
 
+spl PAGER_MODULE.spl
+xi load --module 6 PAGER_MODULE.xsm
+rm PAGER_MODULE.xsm
+
 spl BOOT_MODULE.spl
 xi load --module 7 BOOT_MODULE.xsm
 rm BOOT_MODULE.xsm
@@ -154,7 +158,25 @@ expl ru.expl
 xi load --exec ru.xsm
 rm ru.xsm
 
-xi load --data sample.dat
-xi load --data numbers.dat
+###Assignments
+expl pid.expl
+xi load --exec pid.xsm
+rm pid.xsm
 
-Xsm --debug --timer 1024
+expl assg1.expl
+xi load --exec assg1.xsm
+rm assg1.xsm
+
+expl assg2.expl
+xi load --exec assg2.xsm
+rm assg2.xsm
+
+expl assg3.expl
+xi load --exec assg3.xsm
+rm assg3.xsm
+
+expl pgm1.expl
+xi load --exec pgm1.xsm
+rm pgm1.xsm
+
+Xsm --debug
