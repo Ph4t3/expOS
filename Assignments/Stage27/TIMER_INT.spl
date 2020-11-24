@@ -1,22 +1,68 @@
-//Change stack and backup
-[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13] = SP;
-SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 11]*512 - 1;
-backup;
-[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 4] = READY;
+alias counter R6;
+alias temp R7;
+alias PID R8
+alias pagingStatus R9;
 
-alias counter R0;
-alias temp R1;
+PID = [SYSTEM_STATUS_TABLE + 1];
+pagingStatus = [SYSTEM_STATUS_TABLE + 5];
+//Change stack and backup
+[PROCESS_TABLE + PID*16 + 13] = SP;
+SP = [PROCESS_TABLE + PID*16 + 11]*512 - 1;
+backup;
+
+if(pagingStatus != 0) then
+    // Initiate Swapping or if SWAPPER_DAEMON is blocked (PID == IDLE) skip;
+    if(PID == SWAPPER_DAEMON) then
+        //Wrong Paging Status
+        if((pagingStatus > SWAP_IN) || (pagingStatus < 0)) then
+            print "ERR: PGSTAT>2";
+            halt;
+        endif;
+        multipush(R8);
+        R1 = pagingStatus;
+        R2 = PID;
+        call PAGER_MODULE;
+        multipop(R8);
+    endif;
+else
+    // Swap Out if memory is low
+    if([SYSTEM_STATUS_TABLE + 2] < MEM_LOW) then
+        [SYSTEM_STATUS_TABLE + 5] = SWAP_OUT;
+    else
+        if([SYSTEM_STATUS_TABLE + 4] > 0) then
+            counter = 1;
+            while(counter < MAX_PROC_NUM-1) do
+                temp = PROCESS_TABLE + counter*16;
+                if(([temp + 6] == 1) && ([temp + 4] == READY) && ([temp] > MAX_TICK)) then
+                    break;
+                endif;
+                counter = counter + 1;
+            endwhile;
+
+            // Swap In if memory is high or process tick > MAX_TICK
+            if((counter < MAX_PROC_NUM-1) || ([SYSTEM_STATUS_TABLE + 2] > MEM_HIGH)) then
+                [SYSTEM_STATUS_TABLE + 5] = SWAP_IN;
+            endif;
+        endif;
+    endif;
+endif;
+
+[PROCESS_TABLE + PID*16 + 4] = READY;
+
+// Increment TICK
 counter = 0;
 while (counter < 16) do
-	temp = PROCESS_TABLE + counter*16;
-	[temp] = [temp] + 1;
-	counter = counter + 1;
+    temp = PROCESS_TABLE + counter*16;
+    [temp] = [temp] + 1;
+    counter = counter + 1;
 endwhile;
 
-
+multipush(R8);
 call SCHEDULER;
+multipop(R8);
 
+//Restore and change stack
 restore;
-SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
-[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 0;
+SP = [PROCESS_TABLE + PID*16 + 13];
+[PROCESS_TABLE + PID*16 + 9] = 0;
 ireturn;

@@ -1,0 +1,196 @@
+alias funcNum R1;
+alias PID R2;
+alias counter R3;
+alias temp R4;
+
+if(funcNum == SWAP_OUT) then
+    alias waitProc R6;
+    alias waitSem R7;
+    alias highTicProc R8;
+    alias highTic R9;
+    alias state R10;
+
+    waitProc = -1;
+    waitSem = -1;
+    highTicProc = -1;
+    highTic = 0;
+    counter = 3;
+    while(counter < MAX_PROC_NUM) do
+        temp = PROCESS_TABLE + counter*16; 
+        // Not Swapped
+        if([temp + 6] == 0) then
+            state = [temp + 4];
+            if(state == WAIT_PROCESS) then
+                waitProc = counter;
+                break;
+            endif;
+            if(state == WAIT_SEMAPHORE) then
+                waitSem = counter;
+            endif;
+            if(state != RUNNING && state != TERMINATED && state != ALLOCATED) then
+                if(highTic < [temp]) then
+                    highTic = [temp];
+                    highTicProc = counter; 
+                endif;
+            endif;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    alias swapProc R10;
+    // Find process to swap
+    swapProc = highTicProc; 
+    if(waitSem != -1) then
+        swapProc = waitSem;
+    endif;
+    if(waitProc != -1) then
+        swapProc = waitProc;
+    endif;
+    // If not found return by resetting PAGING_STATUS
+    if(swapProc == -1) then
+        goto Exit;
+    endif;
+
+    alias procPTBR R6;
+    alias procTbl R7;
+    alias phyPg R8;
+    alias swpBlk R9;
+    procTbl = PROCESS_TABLE + swapProc*16;
+    procPTBR = [procTbl + 14];
+    // Reset Tick
+    [procTbl] = 0;
+
+    // Loop through the pagetable 
+    counter = 2;
+    while(counter <= 9) do
+        phyPg = [procPTBR + counter*2];
+        // If Invalid entry
+        if(phyPg == -1) then
+            goto __SWAP_OUT_END;
+        endif;
+        // If Heap is shared, dont swap
+        if(counter >= 2 && counter <= 3 && 
+            [MEMORY_FREE_LIST + phyPg] > 1) then
+            goto __SWAP_OUT_END;
+        endif;
+        // If valid code page
+        if(counter >= 4 && counter <= 7) then
+            goto __SWAP_OUT_RELEASE;
+        endif;
+
+        multipush(R2, R3, R6, R7, R8, R10);
+        R1 = GET_SWAP_BLOCK;
+        call MEMORY_MANAGER;
+        multipop(R2, R3, R6, R7, R8, R10);
+        swpBlk = R0;
+
+        [DISK_MAP_TABLE + swapProc*10 + counter] = swpBlk;
+
+        multipush(R2, R3, R6, R7, R8, R10);
+        R1 = DISK_STORE;
+        R3 = phyPg;
+        R4 = swpBlk;
+        call DEVICE_MANAGER;
+        multipop(R2, R3, R6, R7, R8, R10);
+
+    __SWAP_OUT_RELEASE:
+        multipush(R3, R6, R7, R8, R10);
+        R1 = RELEASE_PAGE;
+        R2 = phyPg;
+        call MEMORY_MANAGER;
+        multipop(R3, R6, R7, R8, R10);
+
+        [procPTBR + counter*2] = -1;
+        [procPTBR + counter*2 + 1] = "0000";
+
+    __SWAP_OUT_END:
+        counter = counter + 1;
+    endwhile;
+    // Set Swap flag
+    [PROCESS_TABLE + swapProc*16 + 6] = 1;
+    // Increment Swapped count
+    [SYSTEM_STATUS_TABLE + 4] = [SYSTEM_STATUS_TABLE + 4] + 1;
+    goto Exit;
+endif;
+
+if(funcNum == SWAP_IN) then
+    alias swapProc R6;
+    alias highTic R7;
+
+    swapProc = -1;
+    highTic = 0;
+    counter = 3;
+    while(counter < MAX_PROC_NUM) do
+        temp = PROCESS_TABLE + counter*16; 
+        if([temp + 6] == 1 && [temp + 4] == READY && highTic < [temp]) then
+            highTic = [temp];
+            swapProc = counter;
+        endif;
+        counter = counter + 1;
+    endwhile;
+
+    if(swapProc == -1) then
+        goto Exit;
+    endif;
+
+    alias procPTBR R7;
+    alias procTbl R8;
+    alias swpBlk R9;
+    alias phyPg R10;
+    procTbl = PROCESS_TABLE + swapProc*16;
+    procPTBR = [procTbl + 14];
+    // Reset Tick
+    [procTbl] = 0;
+
+    counter = 2;
+    // Loop through pagetable
+    while(counter <= 9) do
+        swpBlk = [DISK_MAP_TABLE + swapProc*10 + counter];
+        if(swpBlk == -1) then
+            goto __SWAP_IN_END;
+        endif;
+
+        multipush(R2, R3, R6, R7, R8, R9);
+        R1 = GET_FREE_PAGE;
+        call MEMORY_MANAGER;
+        multipop(R2, R3, R6, R7, R8, R9);
+        phyPg = R0;
+
+        multipush(R2, R3, R6, R7, R8, R9, R10);
+        R1 = DISK_LOAD;
+        R3 = phyPg;
+        R4 = swpBlk;
+        call DEVICE_MANAGER;
+        multipop(R2, R3, R6, R7, R8, R9, R10);
+
+        multipush(R2, R3, R6, R7, R8, R10);
+        R1 = RELEASE_BLOCK;
+        R2 = swpBlk;
+        call MEMORY_MANAGER;
+        multipop(R2, R3, R6, R7, R8, R10);
+
+        // Invalidate disk map table entry
+        [DISK_MAP_TABLE + swapProc*10 + counter] = -1;
+        // set page table entries
+        temp = procPTBR + counter*2;
+        [temp] = phyPg; 
+        [temp + 1] = "0110";
+        
+    __SWAP_IN_END:
+        if(counter == 3) then
+            counter = 8;
+        else
+            counter = counter + 1;
+        endif;
+    endwhile;
+    // Set Swap flag
+    [PROCESS_TABLE + swapProc*16 + 6] = 0;
+    // Increment Swapped count
+    [SYSTEM_STATUS_TABLE + 4] = [SYSTEM_STATUS_TABLE + 4] - 1;
+    goto Exit;
+endif;
+
+Exit:
+    // Reset PAGING_STATUS
+    [SYSTEM_STATUS_TABLE + 5] = 0;
+    return;
