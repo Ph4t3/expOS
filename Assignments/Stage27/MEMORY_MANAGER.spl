@@ -63,9 +63,22 @@ if(functionNum == GET_FREE_BLOCK) then
     return;
 endif;
 
+if(functionNum == GET_SWAP_BLOCK) then
+    alias counter R0;
+    counter = DISK_SWAP_AREA;
+    while(counter < DISK_SIZE) do
+        if([DISK_FREE_LIST + counter] == 0) then
+           [DISK_FREE_LIST + counter] = 1;
+           return;
+        endif;
+        counter = counter + 1;
+    endwhile;
+    return; 
+endif;
+
 if(functionNum == RELEASE_BLOCK) then
 	alias blkNo R2;
-        [DISK_FREE_LIST + blkNo] = [DISK_FREE_LIST + blkNo] - 1;
+        [DISK_FREE_LIST + blkNo] = [DISK_FREE_LIST + blkNo] - 0;
 	return;
 endif;
 

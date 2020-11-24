@@ -1,46 +1,57 @@
 alias currentPID R0;
-alias processTableEntry R1;
+alias procTbl R1;
 
 currentPID = [SYSTEM_STATUS_TABLE + 1];
 multipush(BP);
-processTableEntry = PROCESS_TABLE + currentPID*16;
-[processTableEntry + 12] = SP%512;
-[processTableEntry + 14] = PTBR;
-[processTableEntry + 15] = PTLR;
+procTbl = PROCESS_TABLE + currentPID*16;
+[procTbl + 12] = SP%512;
+[procTbl + 14] = PTBR;
+[procTbl + 15] = PTLR;
 
 alias newPID R2;
-alias newProcessTableEntry R4;
+alias newProcTbl R4;
 alias counter R3;
-counter = 1;
-while (counter <= MAX_PROC_NUM) do
-    newPID = (currentPID + counter)%MAX_PROC_NUM;
-    if (counter == MAX_PROC_NUM) then
+if([SYSTEM_STATUS_TABLE + 5] != 0) then
+    newPID = SWAPPER_DAEMON;
+    newProcTbl = PROCESS_TABLE + newPID*16;
+    if([newProcTbl + 4] != READY && [newProcTbl + 4] != CREATED) then
         newPID = 0;
-        break;
+        newProcTbl = PROCESS_TABLE + newPID*16;
     endif;
-    if (newPID != 0) then
-        processTableEntry = PROCESS_TABLE + newPID*MAX_PROC_NUM;
-        if ([processTableEntry + 4] == CREATED || [processTableEntry + 4] == READY) then
+else
+    counter = 1;
+    while (counter <= MAX_PROC_NUM) do
+        if (counter == MAX_PROC_NUM) then
+            newPID = 0;
+            newProcTbl = PROCESS_TABLE + newPID*MAX_PROC_NUM;
             break;
+        else
+            newPID = (currentPID + counter)%MAX_PROC_NUM;
+            newProcTbl = PROCESS_TABLE + newPID*MAX_PROC_NUM;
         endif;
-    endif;
-    counter = counter + 1;
-endwhile;
 
-newProcessTableEntry = PROCESS_TABLE + newPID*16;
-SP = [newProcessTableEntry + 11]*512 + [newProcessTableEntry + 12];
-PTBR = [newProcessTableEntry + 14];
-PTLR = [newProcessTableEntry + 15];
+        if (newPID != 0 && [newProcTbl + 6] != 1) then
+            if ([newProcTbl + 4] == CREATED || [newProcTbl + 4] == READY) then
+                break;
+            endif;
+        endif;
+        counter = counter + 1;
+    endwhile;
+endif;
+
+SP = [newProcTbl + 11]*512 + [newProcTbl + 12];
+PTBR = [newProcTbl + 14];
+PTLR = [newProcTbl + 15];
 [SYSTEM_STATUS_TABLE + 1] = newPID;
 
-if ([newProcessTableEntry + 4] == CREATED) then
-    [newProcessTableEntry + 4] = RUNNING;
-    SP = [newProcessTableEntry + 13];
-    BP = [[newProcessTableEntry + 11]*512];
-    [newProcessTableEntry + 9] = 0;
+if ([newProcTbl + 4] == CREATED) then
+    [newProcTbl + 4] = RUNNING;
+    SP = [newProcTbl + 13];
+    BP = [[newProcTbl + 11]*512];
+    [newProcTbl + 9] = 0;
     ireturn;
 endif;
 
-[newProcessTableEntry + 4] = RUNNING;
+[newProcTbl + 4] = RUNNING;
 multipop(BP);
 return;

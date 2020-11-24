@@ -5,53 +5,76 @@ loadi(55,68);
 loadi(69,11);
 loadi(70,12);
 
+alias counter R0;
+alias pgTblBaseSwap R1;
+alias temp R2;
+
 //Set stack to userAreaPage of IDLE
 SP = 76*512 - 1;
 call BOOT_MODULE;
 
-//PTBR for idle
+//PTBR for idle and Swapper
 PTBR=PAGE_TABLE_BASE;  //as PID of idle process is 0
+pgTblBaseSwap = PAGE_TABLE_BASE + 20*SWAPPER_DAEMON;
 PTLR = 10;
-//Library
-[PTBR+0] = 63;
-[PTBR+1] = "0100";
-[PTBR+2] = 64;
-[PTBR+3] = "0100";
 
-//Heap
-[PTBR+4] = -1;
-[PTBR+5] = "0000";
-[PTBR+6] = -1;
-[PTBR+7] = "0000";
-
+// Invalidate all page table entries for idle and swapper
+counter = 0;
+while(counter < MAX_PROC_PAGES) do
+    //Idle
+    temp = PTBR + 2*counter;
+    [temp] = -1;
+    [temp + 1] = "0000";
+    // Swapper Daemon
+    temp = pgTblBaseSwap + 2*counter;
+    [temp] = -1;
+    [temp + 1] = "0000";
+    counter = counter + 1;
+endwhile;
+/// Page Table for IDLE
 //Code
 [PTBR+8] = 69;
 [PTBR+9] = "0100";
-[PTBR+10] = -1;
-[PTBR+11] = "0000";
-[PTBR+12] = -1;
-[PTBR+13] = "0000";
-[PTBR+14] = -1;
-[PTBR+15] = "0000";
-
 //Stack
 [PTBR+16] = 70;
 [PTBR+17] = "0110";
-[PTBR+18] = -1;
-[PTBR+19] = "0000";
+/// Page Table for Swapper
+//Code
+[pgTblBaseSwap + 8] = 69;
+[pgTblBaseSwap + 9] = "0100";
+//Stack
+[pgTblBaseSwap + 16] = 81;
+[pgTblBaseSwap + 17] = "0110";
 
-//Setting User Area Page for IDLE Process
+//Setting Process Table for IDLE Process
+[PROCESS_TABLE] = 0;
 [PROCESS_TABLE + 1] = 0;
+[PROCESS_TABLE + 3] = 0;
 [PROCESS_TABLE + 4] = RUNNING;
 [PROCESS_TABLE + 11] = 76;
 [PROCESS_TABLE + 12] = 0;
-[PROCESS_TABLE + 13] = 8*512;
+[PROCESS_TABLE + 13] = 4096;
 [PROCESS_TABLE + 14] = PAGE_TABLE_BASE;
 [PROCESS_TABLE + 15] = 10;
-//Set current PID
-[SYSTEM_STATUS_TABLE + 1] = 0;
 //Transfer entry point from header of IDLE to stack
 [70*512] = [69*512 + 1];
+
+//Setting  Process Table for SWAPPER_DAEMON
+temp = PROCESS_TABLE + SWAPPER_DAEMON*16;
+[temp] = 0;
+[temp + 1] = 0;
+[temp + 3] = 0;
+[temp + 4] = CREATED;
+[temp + 11] = 82;
+[temp + 12] = 0;
+[temp + 13] = 4096;
+[temp + 14] = PAGE_TABLE_BASE + SWAPPER_DAEMON*20;
+[temp + 15] = 10;
+//Transfer entry point from header of IDLE to stack of SWAPPER_DAEMON
+[81*512] = [69*512 + 1];
+
+//Set current PID
+[SYSTEM_STATUS_TABLE + 1] = 0;
 //Stack Pointer to start of stack
 SP = 8*512;
 ireturn;

@@ -1,6 +1,6 @@
 alias counter R6;
 alias temp R7;
-alias PID R8
+alias PID R8;
 alias pagingStatus R9;
 
 PID = [SYSTEM_STATUS_TABLE + 1];
