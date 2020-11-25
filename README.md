@@ -33,5 +33,5 @@
 - [x] Stage 24 : File Read :heavy_check_mark:
 - [x] Stage 25 : File Write :heavy_check_mark:
 - [x] Stage 26 : User Management :heavy_check_mark:
-- [ ] Stage 27 : Pager Module
+- [x] Stage 27 : Pager Module :heavy_check_mark:
 - [ ] Stage 28 : Multi-Core Extension
