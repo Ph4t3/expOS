@@ -179,4 +179,4 @@ expl pgm1.expl
 xi load --exec pgm1.xsm
 rm pgm1.xsm
 
-Xsm --debug --timer 1024
+Xsm --debug

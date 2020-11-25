@@ -46,6 +46,7 @@ if(sysCallNo == INT_OPEN) then
     R2 = fileName;
     call FILE_MANAGER;
     multipop(R5, R6, R7, R8, R9, R10, R11, R12);
+    phyAddrRetVal = [PTBR + 2*((userSP - 1)/512)]*512 + (userSP - 1)%512;
 
     //If no free Open File Table Entry
     if((R0 == -1) || (R0 == -2)) then
@@ -161,6 +162,6 @@ ReleaseLock:
     call Exit;
 
 Exit:
-    SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
-    [PROCESS_TABLE + PID*16 + 9] = 0;
+    SP = userSP;
+    [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 0;
     ireturn;
