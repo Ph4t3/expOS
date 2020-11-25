@@ -103,7 +103,7 @@ if(functionNum == OPEN) then
     if(openFileIdx == -1) then
         R0 = -2;
         R3 = inodeIndex;
-        call ReleaseInode;
+        goto ReleaseInode;
     endif;
 
     // Set Open File Table Inode Index
@@ -126,7 +126,7 @@ if(functionNum == OPEN) then
     // Return after Releasing Inode
     R0 = openFileIdx;
     R3 = inodeIndex;
-    call ReleaseInode;
+    goto ReleaseInode;
 endif;
 
 if(functionNum == CLOSE) then 

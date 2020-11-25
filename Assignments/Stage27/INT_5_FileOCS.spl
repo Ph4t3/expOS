@@ -108,12 +108,12 @@ if(sysCallNo == INT_SEEK) then
     inodeIdx = [OPEN_FILE_TABLE + opnFileIdx*4];
 
     // Acquire lock on file
-    multipush(R6, R7, R8, R9, R10, R11, R12, R13);
+    multipush(R5, R6, R7, R8, R9, R10, R11, R12, R13);
     R1 = ACQUIRE_INODE;
     R2 = PID;
     R3 = inodeIdx;
     call RESOURCE_MANAGER;
-    multipop(R6, R7, R8, R9, R10, R11, R12, R13);
+    multipop(R5, R6, R7, R8, R9, R10, R11, R12, R13);
     // If Locking fails
     if(R0 == -1) then
         [phyAddrRetVal] = -1;
@@ -153,12 +153,14 @@ if(sysCallNo == INT_SEEK) then
 endif;
 
 ReleaseLock:
+    multipush(R5); 
     R1 = RELEASE_INODE;
     R2 = PID;
     call RESOURCE_MANAGER;
+    multipop(R5);
     call Exit;
 
 Exit:
-    SP = userSP;
+    SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 13];
     [PROCESS_TABLE + PID*16 + 9] = 0;
     ireturn;
