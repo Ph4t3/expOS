@@ -179,4 +179,28 @@ expl pgm1.expl
 xi load --exec pgm1.xsm
 rm pgm1.xsm
 
+expl assg4.expl
+xi load --exec assg4.xsm
+rm assg4.xsm
+
+expl pgm2.expl
+xi load --exec pgm2.xsm
+rm pgm2.xsm
+
+expl merge.expl
+xi load --exec merge.xsm
+rm merge.xsm
+
+expl m_sort.expl
+xi load --exec m_sort.xsm
+rm m_sort.xsm
+
+expl m_store.expl
+xi load --exec m_store.xsm
+rm m_store.xsm
+
+expl m_merge.expl
+xi load --exec m_merge.xsm
+rm m_merge.xsm
+
 Xsm --debug
